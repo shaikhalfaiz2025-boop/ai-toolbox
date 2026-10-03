@@ -1,0 +1,1940 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Toolbox — Powerful AI Tools in One Place</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #07050d;
+            --bg2: #0d0917;
+            --card: rgba(255,255,255,0.055);
+            --card-hover: rgba(255,255,255,0.085);
+            --white: #ffffff;
+            --text: #eeeafd;
+            --muted: #9d98ae;
+            --purple: #7c3cff;
+            --violet: #a855f7;
+            --pink: #ec4899;
+            --border: rgba(255,255,255,0.10);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Inter, Arial, Helvetica, sans-serif;
+            background:
+                radial-gradient(circle at 15% 10%, rgba(124,60,255,.18), transparent 28%),
+                radial-gradient(circle at 85% 15%, rgba(236,72,153,.10), transparent 25%),
+                var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* =========================
+           BACKGROUND GLOW
+        ========================= */
+
+        body::before {
+            content: "";
+            position: fixed;
+            width: 420px;
+            height: 420px;
+            border-radius: 50%;
+            background: rgba(124,60,255,.08);
+            filter: blur(100px);
+            top: 20%;
+            left: -180px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            width: 420px;
+            height: 420px;
+            border-radius: 50%;
+            background: rgba(168,85,247,.07);
+            filter: blur(100px);
+            right: -180px;
+            bottom: 10%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 999;
+
+            height: 76px;
+            padding: 0 6%;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            background: rgba(7,5,13,.78);
+            backdrop-filter: blur(20px);
+
+            border-bottom: 1px solid rgba(255,255,255,.07);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+
+            font-size: 21px;
+            font-weight: 900;
+            letter-spacing: -.5px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 11px;
+
+            background: linear-gradient(
+                135deg,
+                var(--purple),
+                var(--pink)
+            );
+
+            box-shadow:
+                0 0 25px rgba(124,60,255,.45);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 34px;
+        }
+
+        .nav-menu a {
+            color: #aaa5b8;
+            font-size: 14px;
+            font-weight: 600;
+            transition: .25s;
+        }
+
+        .nav-menu a:hover {
+            color: white;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .login-btn {
+            color: #c5bfd3;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 10px 14px;
+        }
+
+        .nav-cta {
+            padding: 11px 18px;
+            border-radius: 11px;
+
+            background: linear-gradient(
+                135deg,
+                var(--purple),
+                var(--violet)
+            );
+
+            color: white;
+            font-size: 13px;
+            font-weight: 800;
+
+            box-shadow:
+                0 8px 25px rgba(124,60,255,.28);
+
+            transition: .25s;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 12px 35px rgba(124,60,255,.42);
+        }
+
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+            position: relative;
+
+            min-height: 720px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 100px 6% 130px;
+
+            text-align: center;
+        }
+
+        .hero-grid {
+            position: absolute;
+            inset: 0;
+
+            background-image:
+                linear-gradient(
+                    rgba(255,255,255,.025) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255,255,255,.025) 1px,
+                    transparent 1px
+                );
+
+            background-size: 55px 55px;
+
+            mask-image:
+                linear-gradient(
+                    to bottom,
+                    black,
+                    transparent 85%
+                );
+
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+
+            max-width: 1000px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 8px 14px;
+
+            border: 1px solid rgba(168,85,247,.28);
+            border-radius: 30px;
+
+            background: rgba(124,60,255,.08);
+
+            color: #cbb7ff;
+
+            font-size: 12px;
+            font-weight: 800;
+
+            box-shadow:
+                0 0 30px rgba(124,60,255,.08);
+        }
+
+        .live-dot {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+            background: #a855f7;
+
+            box-shadow:
+                0 0 12px #a855f7;
+        }
+
+        .hero h1 {
+            margin-top: 28px;
+
+            font-size: clamp(48px, 7vw, 88px);
+            line-height: 1.02;
+
+            letter-spacing: -4px;
+            font-weight: 900;
+        }
+
+        .gradient-text {
+            background: linear-gradient(
+                90deg,
+                #8b5cf6,
+                #c084fc,
+                #f472b6
+            );
+
+            background-clip: text;
+            -webkit-background-clip: text;
+
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-description {
+            max-width: 690px;
+
+            margin: 28px auto 0;
+
+            color: var(--muted);
+            font-size: 18px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+
+            margin-top: 36px;
+        }
+
+        .primary-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 14px 23px;
+
+            border-radius: 13px;
+
+            background: linear-gradient(
+                135deg,
+                var(--purple),
+                var(--violet)
+            );
+
+            color: white;
+
+            font-size: 14px;
+            font-weight: 800;
+
+            box-shadow:
+                0 12px 35px rgba(124,60,255,.32);
+
+            transition: .25s;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-3px);
+            box-shadow:
+                0 18px 45px rgba(124,60,255,.48);
+        }
+
+        .secondary-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 14px 23px;
+
+            border: 1px solid var(--border);
+            border-radius: 13px;
+
+            background: rgba(255,255,255,.04);
+
+            color: #ddd8e8;
+
+            font-size: 14px;
+            font-weight: 800;
+
+            transition: .25s;
+        }
+
+        .secondary-btn:hover {
+            background: rgba(255,255,255,.08);
+            border-color: rgba(168,85,247,.35);
+            transform: translateY(-3px);
+        }
+
+        /* =========================
+           HERO STATS
+        ========================= */
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 70px;
+
+            margin-top: 65px;
+        }
+
+        .stat strong {
+            display: block;
+
+            font-size: 28px;
+            font-weight: 900;
+
+            color: white;
+        }
+
+        .stat span {
+            color: #777185;
+            font-size: 12px;
+        }
+
+        /* =========================
+           TOOL SEARCH
+        ========================= */
+
+        .search-section {
+            width: min(850px, 88%);
+
+            margin: -35px auto 0;
+
+            position: relative;
+            z-index: 10;
+
+            padding: 27px;
+
+            border: 1px solid rgba(255,255,255,.10);
+            border-radius: 22px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.08),
+                    rgba(255,255,255,.035)
+                );
+
+            backdrop-filter: blur(20px);
+
+            box-shadow:
+                0 30px 80px rgba(0,0,0,.30);
+        }
+
+        .search-title {
+            text-align: center;
+            margin-bottom: 17px;
+
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            padding: 15px 17px;
+
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 13px;
+
+            background: rgba(0,0,0,.22);
+        }
+
+        .search-box span {
+            font-size: 18px;
+            opacity: .7;
+        }
+
+        .search-box input {
+            width: 100%;
+
+            border: none;
+            outline: none;
+
+            background: transparent;
+
+            color: white;
+            font-size: 14px;
+        }
+
+        .search-box input::placeholder {
+            color: #716c7d;
+        }
+
+        /* =========================
+           SECTIONS
+        ========================= */
+
+        .section {
+            padding: 120px 6%;
+        }
+
+        .section-heading {
+            max-width: 700px;
+            margin: 0 auto 55px;
+
+            text-align: center;
+        }
+
+        .eyebrow {
+            color: #a78bfa;
+
+            font-size: 11px;
+            font-weight: 900;
+
+            letter-spacing: 2px;
+        }
+
+        .section-heading h2 {
+            margin-top: 10px;
+
+            font-size: clamp(32px, 4vw, 48px);
+
+            letter-spacing: -2px;
+            line-height: 1.1;
+        }
+
+        .section-heading p {
+            margin-top: 14px;
+
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        /* =========================
+           TOOLS GRID
+        ========================= */
+
+        .tools-grid {
+            max-width: 1200px;
+            margin: auto;
+
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 20px;
+        }
+
+        .tool-card {
+            position: relative;
+
+            padding: 29px;
+
+            min-height: 270px;
+
+            border: 1px solid var(--border);
+            border-radius: 20px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.075),
+                    rgba(255,255,255,.025)
+                );
+
+            backdrop-filter: blur(12px);
+
+            overflow: hidden;
+
+            transition: .3s;
+        }
+
+        .tool-card::before {
+            content: "";
+
+            position: absolute;
+
+            width: 150px;
+            height: 150px;
+
+            top: -80px;
+            right: -70px;
+
+            border-radius: 50%;
+
+            background: rgba(124,60,255,.13);
+
+            filter: blur(30px);
+
+            transition: .3s;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-8px);
+
+            background: var(--card-hover);
+
+            border-color: rgba(168,85,247,.30);
+
+            box-shadow:
+                0 25px 60px rgba(0,0,0,.28),
+                0 0 30px rgba(124,60,255,.07);
+        }
+
+        .tool-card:hover::before {
+            transform: scale(1.5);
+        }
+
+        .tool-icon {
+            width: 54px;
+            height: 54px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin-bottom: 22px;
+
+            border-radius: 15px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(124,60,255,.18),
+                    rgba(168,85,247,.08)
+                );
+
+            border: 1px solid rgba(168,85,247,.18);
+
+            font-size: 25px;
+        }
+
+        .tool-card h3 {
+            font-size: 20px;
+            margin-bottom: 9px;
+        }
+
+        .tool-card p {
+            color: var(--muted);
+            font-size: 13px;
+            min-height: 62px;
+        }
+
+        .tool-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+
+            margin-top: 17px;
+
+            color: #b79cff;
+
+            font-size: 13px;
+            font-weight: 800;
+
+            transition: .2s;
+        }
+
+        .tool-link:hover {
+            color: white;
+            gap: 11px;
+        }
+
+        /* =========================
+           CATEGORIES
+        ========================= */
+
+        .categories {
+            background:
+                linear-gradient(
+                    180deg,
+                    transparent,
+                    rgba(124,60,255,.035),
+                    transparent
+                );
+        }
+
+        .category-grid {
+            max-width: 1100px;
+            margin: auto;
+
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .category-card {
+            padding: 25px;
+
+            border: 1px solid var(--border);
+            border-radius: 17px;
+
+            background: rgba(255,255,255,.035);
+
+            transition: .25s;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255,255,255,.065);
+            border-color: rgba(168,85,247,.25);
+        }
+
+        .category-icon {
+            font-size: 25px;
+            margin-bottom: 10px;
+        }
+
+        .category-card h3 {
+            font-size: 16px;
+        }
+
+        .category-card p {
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        /* =========================
+           HOW IT WORKS
+        ========================= */
+
+        .steps {
+            max-width: 1050px;
+            margin: auto;
+
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 20px;
+        }
+
+        .step {
+            padding: 32px;
+
+            text-align: center;
+
+            border: 1px solid var(--border);
+            border-radius: 20px;
+
+            background: rgba(255,255,255,.035);
+        }
+
+        .step-number {
+            width: 52px;
+            height: 52px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin: 0 auto 20px;
+
+            border-radius: 15px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--purple),
+                    var(--violet)
+                );
+
+            color: white;
+
+            font-size: 14px;
+            font-weight: 900;
+
+            box-shadow:
+                0 10px 30px rgba(124,60,255,.25);
+        }
+
+        .step h3 {
+            font-size: 17px;
+        }
+
+        .step p {
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        /* =========================
+           PRICING
+        ========================= */
+
+        .pricing-grid {
+            max-width: 1050px;
+            margin: auto;
+
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .price-card {
+            position: relative;
+
+            padding: 32px;
+
+            border: 1px solid var(--border);
+            border-radius: 22px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.065),
+                    rgba(255,255,255,.025)
+                );
+        }
+
+        .price-card.popular {
+            border-color: rgba(168,85,247,.55);
+
+            box-shadow:
+                0 20px 70px rgba(124,60,255,.13);
+        }
+
+        .popular-badge {
+            position: absolute;
+
+            top: -12px;
+            left: 25px;
+
+            padding: 5px 12px;
+
+            border-radius: 20px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--purple),
+                    var(--pink)
+                );
+
+            color: white;
+
+            font-size: 9px;
+            font-weight: 900;
+        }
+
+        .price-card h3 {
+            font-size: 20px;
+        }
+
+        .price {
+            margin: 16px 0;
+
+            font-size: 40px;
+            font-weight: 900;
+        }
+
+        .price span {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .price-card > p {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .price-card ul {
+            list-style: none;
+            margin: 23px 0;
+        }
+
+        .price-card li {
+            margin: 10px 0;
+            color: #c7c1d1;
+            font-size: 13px;
+        }
+
+        .price-btn {
+            display: block;
+
+            padding: 12px;
+
+            border: 1px solid var(--border);
+            border-radius: 11px;
+
+            text-align: center;
+
+            color: #d4c9ff;
+
+            font-size: 13px;
+            font-weight: 800;
+
+            transition: .25s;
+        }
+
+        .price-btn:hover,
+        .popular .price-btn {
+            background: linear-gradient(
+                135deg,
+                var(--purple),
+                var(--violet)
+            );
+
+            border-color: transparent;
+            color: white;
+        }
+
+        /* =========================
+           CTA
+        ========================= */
+
+        .cta {
+            position: relative;
+
+            margin: 50px 6% 110px;
+
+            padding: 90px 30px;
+
+            text-align: center;
+
+            overflow: hidden;
+
+            border: 1px solid rgba(168,85,247,.25);
+            border-radius: 30px;
+
+            background:
+                radial-gradient(
+                    circle at 50% 100%,
+                    rgba(236,72,153,.18),
+                    transparent 45%
+                ),
+                linear-gradient(
+                    135deg,
+                    rgba(124,60,255,.20),
+                    rgba(168,85,247,.07)
+                );
+        }
+
+        .cta::before {
+            content: "";
+
+            position: absolute;
+
+            width: 300px;
+            height: 300px;
+
+            left: 50%;
+            top: -200px;
+
+            transform: translateX(-50%);
+
+            border-radius: 50%;
+
+            background: rgba(124,60,255,.18);
+
+            filter: blur(80px);
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta h2 {
+            font-size: clamp(32px, 5vw, 55px);
+            letter-spacing: -2px;
+        }
+
+        .cta p {
+            margin: 14px auto 28px;
+
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+            padding: 60px 6% 30px;
+
+            border-top: 1px solid rgba(255,255,255,.07);
+
+            background: #05040a;
+
+            text-align: center;
+        }
+
+        .footer-logo {
+            font-size: 21px;
+            font-weight: 900;
+        }
+
+        .footer-description {
+            max-width: 450px;
+            margin: 10px auto 25px;
+
+            color: #777181;
+            font-size: 13px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 25px;
+
+            margin-bottom: 30px;
+        }
+
+        .footer-links a {
+            color: #8d8798;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .copyright {
+            padding-top: 22px;
+
+            border-top: 1px solid rgba(255,255,255,.06);
+
+            color: #5e5968;
+            font-size: 11px;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 900px) {
+
+            .nav-menu {
+                display: none;
+            }
+
+            .tools-grid,
+            .pricing-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .category-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .steps {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .navbar {
+                padding: 0 18px;
+            }
+
+            .login-btn {
+                display: none;
+            }
+
+            .nav-cta {
+                padding: 9px 13px;
+            }
+
+            .hero {
+                min-height: 650px;
+                padding: 80px 20px 100px;
+            }
+
+            .hero h1 {
+                font-size: 48px;
+                letter-spacing: -2.5px;
+            }
+
+            .hero-description {
+                font-size: 15px;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .stats {
+                gap: 25px;
+            }
+
+            .stat strong {
+                font-size: 22px;
+            }
+
+            .search-section {
+                width: 92%;
+            }
+
+            .section {
+                padding: 85px 20px;
+            }
+
+            .tools-grid,
+            .category-grid,
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .price-card.popular {
+                transform: none;
+            }
+
+            .cta {
+                margin: 30px 20px 80px;
+                padding: 65px 20px;
+            }
+
+            .footer-links {
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         NAVBAR
+    ========================= -->
+
+    <header class="navbar">
+
+        <a href="index.html" class="logo">
+
+            <span class="logo-icon">
+                ⚡
+            </span>
+
+            AI Toolbox
+
+        </a>
+
+
+        <nav class="nav-menu">
+
+            <a href="#home">
+                Home
+            </a>
+
+            <a href="#tools">
+                AI Tools
+            </a>
+
+            <a href="#pricing">
+                Pricing
+            </a>
+
+            <a href="#about">
+                About
+            </a>
+
+        </nav>
+
+
+        <div class="nav-actions">
+
+            <a
+                href="login.html"
+                class="login-btn"
+            >
+                Login
+            </a>
+
+            <a
+                href="#tools"
+                class="nav-cta"
+            >
+                Get Started
+            </a>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================
+         HERO
+    ========================= -->
+
+    <section
+        class="hero"
+        id="home"
+    >
+
+        <div class="hero-grid"></div>
+
+
+        <div class="hero-content">
+
+            <div class="hero-badge">
+
+                <span class="live-dot"></span>
+
+                Next-generation AI workspace
+
+            </div>
+
+
+            <h1>
+
+                One Toolbox.
+
+                <br>
+
+                <span class="gradient-text">
+                    Infinite Possibilities.
+                </span>
+
+            </h1>
+
+
+            <p class="hero-description">
+
+                Write smarter, create stunning visuals,
+                summarize documents, generate code and
+                communicate better — all with AI Toolbox.
+
+            </p>
+
+
+            <div class="hero-buttons">
+
+                <a
+                    href="#tools"
+                    class="primary-btn"
+                >
+                    ✨ Explore AI Tools
+                </a>
+
+
+                <a
+                    href="#how-it-works"
+                    class="secondary-btn"
+                >
+                    ▶ See How It Works
+                </a>
+
+            </div>
+
+
+            <div class="stats">
+
+                <div class="stat">
+
+                    <strong>
+                        6+
+                    </strong>
+
+                    <span>
+                        AI Tools
+                    </span>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <strong>
+                        24/7
+                    </strong>
+
+                    <span>
+                        Available
+                    </span>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <strong>
+                        ⚡
+                    </strong>
+
+                    <span>
+                        Fast Workflow
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         SEARCH
+    ========================= -->
+
+    <section class="search-section">
+
+        <div class="search-title">
+            🔍 What are you looking to create?
+        </div>
+
+
+        <div class="search-box">
+
+            <span>
+                ✨
+            </span>
+
+            <input
+                id="searchInput"
+                type="text"
+                placeholder="Search AI Writer, Image Generator, Code Generator..."
+            >
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         AI TOOLS
+    ========================= -->
+
+    <section
+        class="section"
+        id="tools"
+    >
+
+        <div class="section-heading">
+
+            <div class="eyebrow">
+                POWERFUL AI TOOLS
+            </div>
+
+            <h2>
+                Everything you need,
+                <span class="gradient-text">
+                    in one place.
+                </span>
+            </h2>
+
+            <p>
+                A growing collection of AI-powered tools
+                designed to make your everyday work faster.
+            </p>
+
+        </div>
+
+
+        <div class="tools-grid">
+
+
+            <!-- WRITER -->
+
+            <div class="tool-card">
+
+                <div class="tool-icon">
+                    ✍️
+                </div>
+
+                <h3>
+                    AI Writer
+                </h3>
+
+                <p>
+                    Create professional blogs, articles,
+                    captions, introductions and other content.
+                </p>
+
+                <a
+                    href="ai-writer.html"
+                    class="tool-link"
+                >
+                    Open Writer →
+                </a>
+
+            </div>
+
+
+            <!-- IMAGE -->
+
+            <div class="tool-card">
+
+                <div class="tool-icon">
+                    🎨
+                </div>
+
+                <h3>
+                    AI Image Generator
+                </h3>
+
+                <p>
+                    Turn your imagination into beautiful
+                    AI-generated visuals using prompts.
+                </p>
+
+                <a
+                    href="ai-image.html"
+                    class="tool-link"
+                >
+                    Create Images →
+                </a>
+
+            </div>
+
+
+            <!-- PDF -->
+
+            <div class="tool-card">
+
+                <div class="tool-icon">
+                    📄
+                </div>
+
+                <h3>
+                    PDF Summarizer
+                </h3>
+
+                <p>
+                    Understand long documents quickly
+                    with AI-powered summaries.
+                </p>
+
+                <a
+                    href="pdf-summarizer.html"
+                    class="tool-link"
+                >
+                    Summarize PDF →
+                </a>
+
+            </div>
+
+
+            <!-- CODE -->
+
+            <div class="tool-card">
+
+                <div class="tool-icon">
+                    💻
+                </div>
+
+                <h3>
+                    AI Code Generator
+                </h3>
+
+                <p>
+                    Generate, explain and improve code
+                    with an AI development assistant.
+                </p>
+
+                <a
+                    href="ai-code.html"
+                    class="tool-link"
+                >
+                    Generate Code →
+                </a>
+
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div class="tool-card">
+
+                <div class="tool-icon">
+                    📧
+                </div>
+
+                <h3>
+                    AI Email Writer
+                </h3>
+
+                <p>
+                    Write clear, professional emails
+                    in seconds.
+                </p>
+
+                <a
+                    href="ai-email.html"
+                    class="tool-link"
+                >
+                    Write Email →
+                </a>
+
+            </div>
+
+
+            <!-- TRANSLATOR -->
+
+            <div class="tool-card">
+
+                <div class="tool-icon">
+                    🌐
+                </div>
+
+                <h3>
+                    AI Translator
+                </h3>
+
+                <p>
+                    Translate text between languages
+                    with a clean and simple workflow.
+                </p>
+
+                <a
+                    href="ai-translator.html"
+                    class="tool-link"
+                >
+                    Translate →
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         CATEGORIES
+    ========================= -->
+
+    <section class="section categories">
+
+        <div class="section-heading">
+
+            <div class="eyebrow">
+                EXPLORE
+            </div>
+
+            <h2>
+                Built for every workflow.
+            </h2>
+
+            <p>
+                From content creation to development,
+                AI Toolbox has you covered.
+            </p>
+
+        </div>
+
+
+        <div class="category-grid">
+
+
+            <div class="category-card">
+
+                <div class="category-icon">
+                    ✍️
+                </div>
+
+                <h3>
+                    Content Creation
+                </h3>
+
+                <p>
+                    Blogs, articles and creative writing.
+                </p>
+
+            </div>
+
+
+            <div class="category-card">
+
+                <div class="category-icon">
+                    🎨
+                </div>
+
+                <h3>
+                    Creative Design
+                </h3>
+
+                <p>
+                    Generate visuals from your ideas.
+                </p>
+
+            </div>
+
+
+            <div class="category-card">
+
+                <div class="category-icon">
+                    📚
+                </div>
+
+                <h3>
+                    Productivity
+                </h3>
+
+                <p>
+                    Summaries and smarter workflows.
+                </p>
+
+            </div>
+
+
+            <div class="category-card">
+
+                <div class="category-icon">
+                    💻
+                </div>
+
+                <h3>
+                    Development
+                </h3>
+
+                <p>
+                    Build and understand code faster.
+                </p>
+
+            </div>
+
+
+            <div class="category-card">
+
+                <div class="category-icon">
+                    📧
+                </div>
+
+                <h3>
+                    Communication
+                </h3>
+
+                <p>
+                    Professional emails made simple.
+                </p>
+
+            </div>
+
+
+            <div class="category-card">
+
+                <div class="category-icon">
+                    🌐
+                </div>
+
+                <h3>
+                    Languages
+                </h3>
+
+                <p>
+                    Translate and understand text.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         HOW IT WORKS
+    ========================= -->
+
+    <section
+        class="section"
+        id="how-it-works"
+    >
+
+        <div class="section-heading">
+
+            <div class="eyebrow">
+                SIMPLE WORKFLOW
+            </div>
+
+            <h2>
+                Create something amazing
+                in three steps.
+            </h2>
+
+        </div>
+
+
+        <div class="steps">
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    01
+                </div>
+
+                <h3>
+                    Choose a Tool
+                </h3>
+
+                <p>
+                    Select the AI tool that matches
+                    your task.
+                </p>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    02
+                </div>
+
+                <h3>
+                    Enter Your Prompt
+                </h3>
+
+                <p>
+                    Tell the AI what you want
+                    in simple words.
+                </p>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    03
+                </div>
+
+                <h3>
+                    Get Your Result
+                </h3>
+
+                <p>
+                    Generate your result and
+                    continue your workflow.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         PRICING
+    ========================= -->
+
+    <section
+        class="section"
+        id="pricing"
+    >
+
+        <div class="section-heading">
+
+            <div class="eyebrow">
+                PRICING
+            </div>
+
+            <h2>
+                Simple plans.
+                <span class="gradient-text">
+                    Powerful AI.
+                </span>
+            </h2>
+
+            <p>
+                Start free and upgrade when you need more.
+            </p>
+
+        </div>
+
+
+        <div class="pricing-grid">
+
+
+            <div class="price-card">
+
+                <h3>
+                    Free
+                </h3>
+
+                <div class="price">
+                    ₹0
+                    <span>/ month</span>
+                </div>
+
+                <p>
+                    Start exploring AI Toolbox.
+                </p>
+
+                <ul>
+                    <li>✓ Basic AI tools</li>
+                    <li>✓ Limited generations</li>
+                    <li>✓ Standard access</li>
+                </ul>
+
+                <a
+                    href="#tools"
+                    class="price-btn"
+                >
+                    Get Started
+                </a>
+
+            </div>
+
+
+            <div class="price-card popular">
+
+                <div class="popular-badge">
+                    MOST POPULAR
+                </div>
+
+                <h3>
+                    Pro
+                </h3>
+
+                <div class="price">
+                    ₹499
+                    <span>/ month</span>
+                </div>
+
+                <p>
+                    For regular creators and users.
+                </p>
+
+                <ul>
+                    <li>✓ All AI tools</li>
+                    <li>✓ Higher usage limits</li>
+                    <li>✓ Priority access</li>
+                    <li>✓ Faster workflow</li>
+                </ul>
+
+                <a
+                    href="#tools"
+                    class="price-btn"
+                >
+                    Choose Pro
+                </a>
+
+            </div>
+
+
+            <div class="price-card">
+
+                <h3>
+                    Premium
+                </h3>
+
+                <div class="price">
+                    ₹999
+                    <span>/ month</span>
+                </div>
+
+                <p>
+                    For power users and professionals.
+                </p>
+
+                <ul>
+                    <li>✓ All AI tools</li>
+                    <li>✓ Highest limits</li>
+                    <li>✓ Priority support</li>
+                    <li>✓ Premium features</li>
+                </ul>
+
+                <a
+                    href="#tools"
+                    class="price-btn"
+                >
+                    Go Premium
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         CTA
+    ========================= -->
+
+    <section class="cta">
+
+        <div class="cta-content">
+
+            <h2>
+                Your next idea starts here.
+            </h2>
+
+            <p>
+                One powerful AI workspace for writing,
+                creating, coding and more.
+            </p>
+
+            <a
+                href="#tools"
+                class="primary-btn"
+            >
+                🚀 Start Creating
+            </a>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         FOOTER
+    ========================= -->
+
+    <footer id="about">
+
+        <div class="footer-logo">
+            ⚡ AI Toolbox
+        </div>
+
+        <p class="footer-description">
+            A modern AI workspace bringing powerful
+            AI tools together in one simple platform.
+        </p>
+
+        <div class="footer-links">
+
+            <a href="#home">
+                Home
+            </a>
+
+            <a href="#tools">
+                AI Tools
+            </a>
+
+            <a href="#pricing">
+                Pricing
+            </a>
+
+            <a href="login.html">
+                Login
+            </a>
+
+            <a href="signup.html">
+                Sign Up
+            </a>
+
+        </div>
+
+        <div class="copyright">
+            © 2026 AI Toolbox. All rights reserved.
+        </div>
+
+    </footer>
+
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

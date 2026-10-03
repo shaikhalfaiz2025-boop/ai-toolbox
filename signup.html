@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sign Up - AI Toolbox</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 30px 20px;
+
+            font-family:
+                Inter,
+                Arial,
+                sans-serif;
+
+            color: #ffffff;
+
+            background:
+                radial-gradient(
+                    circle at 15% 15%,
+                    rgba(124, 58, 237, 0.25),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 85% 85%,
+                    rgba(236, 72, 153, 0.20),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 50% 50%,
+                    rgba(59, 130, 246, 0.08),
+                    transparent 45%
+                ),
+                #070711;
+
+            overflow-x: hidden;
+        }
+
+        /* Background glow */
+
+        .glow {
+            position: fixed;
+            width: 320px;
+            height: 320px;
+
+            border-radius: 50%;
+
+            filter: blur(100px);
+
+            opacity: 0.25;
+
+            pointer-events: none;
+        }
+
+        .glow-one {
+            top: -120px;
+            left: -100px;
+
+            background: #7c3aed;
+        }
+
+        .glow-two {
+            bottom: -120px;
+            right: -100px;
+
+            background: #ec4899;
+        }
+
+        /* Main card */
+
+        .signup-container {
+            position: relative;
+
+            width: min(460px, 100%);
+
+            padding: 42px;
+
+            border-radius: 28px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,0.10),
+                    rgba(255,255,255,0.04)
+                );
+
+            border: 1px solid rgba(255,255,255,0.12);
+
+            box-shadow:
+                0 35px 100px rgba(0,0,0,0.55),
+                inset 0 1px 0 rgba(255,255,255,0.08);
+
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+
+            z-index: 2;
+        }
+
+        /* Logo */
+
+        .logo {
+            text-align: center;
+
+            font-size: 28px;
+            font-weight: 900;
+
+            margin-bottom: 8px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #a78bfa,
+                    #ec4899
+                );
+
+            background-clip: text;
+            -webkit-background-clip: text;
+
+            color: transparent;
+        }
+
+        .logo-icon {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            width: 38px;
+            height: 38px;
+
+            margin-right: 7px;
+
+            border-radius: 11px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7c3aed,
+                    #ec4899
+                );
+
+            color: white;
+
+            font-size: 19px;
+
+            box-shadow:
+                0 8px 25px rgba(124,58,237,0.35);
+        }
+
+        .subtitle {
+            text-align: center;
+
+            color: #9ca3af;
+
+            font-size: 14px;
+
+            margin-bottom: 30px;
+        }
+
+        /* Form */
+
+        .form-group {
+            margin-bottom: 19px;
+        }
+
+        label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            color: #d1d5db;
+
+            font-size: 13px;
+
+            font-weight: 800;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+
+            padding: 14px 15px;
+
+            border: 1px solid rgba(255,255,255,0.12);
+
+            border-radius: 13px;
+
+            outline: none;
+
+            background: rgba(0,0,0,0.20);
+
+            color: #ffffff;
+
+            font-size: 15px;
+
+            transition:
+                border-color 0.25s ease,
+                box-shadow 0.25s ease,
+                background 0.25s ease;
+        }
+
+        input::placeholder {
+            color: #6b7280;
+        }
+
+        input:focus {
+            border-color: rgba(139,92,246,0.85);
+
+            background: rgba(0,0,0,0.30);
+
+            box-shadow:
+                0 0 0 4px rgba(124,58,237,0.12),
+                0 0 25px rgba(124,58,237,0.08);
+        }
+
+        /* Terms */
+
+        .terms {
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: 10px;
+
+            margin: 22px 0;
+
+            color: #9ca3af;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+        }
+
+        .terms input {
+            width: 17px;
+            height: 17px;
+
+            margin-top: 2px;
+
+            flex-shrink: 0;
+
+            accent-color: #8b5cf6;
+
+            cursor: pointer;
+        }
+
+        .terms label {
+            margin: 0;
+
+            color: #9ca3af;
+
+            font-size: 13px;
+
+            font-weight: 500;
+        }
+
+        .terms a {
+            color: #a78bfa;
+
+            text-decoration: none;
+
+            font-weight: 700;
+        }
+
+        .terms a:hover {
+            text-decoration: underline;
+        }
+
+        /* Button */
+
+        #signupButton {
+            width: 100%;
+
+            padding: 15px;
+
+            border: none;
+
+            border-radius: 14px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7c3aed,
+                    #a855f7 50%,
+                    #ec4899
+                );
+
+            color: white;
+
+            font-size: 15px;
+
+            font-weight: 900;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 14px 35px rgba(124,58,237,0.30);
+
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease,
+                opacity 0.25s ease;
+        }
+
+        #signupButton:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 18px 45px rgba(124,58,237,0.42);
+        }
+
+        #signupButton:active {
+            transform: translateY(0);
+        }
+
+        #signupButton:disabled {
+            opacity: 0.65;
+
+            cursor: not-allowed;
+
+            transform: none;
+        }
+
+        /* Message */
+
+        #message {
+            display: none;
+
+            margin-top: 16px;
+
+            padding: 12px 14px;
+
+            border-radius: 12px;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+
+            text-align: center;
+
+            font-weight: 700;
+
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        /* Login */
+
+        .login-link {
+            text-align: center;
+
+            margin-top: 24px;
+
+            color: #6b7280;
+
+            font-size: 14px;
+        }
+
+        .login-link a {
+            color: #a78bfa;
+
+            font-weight: 800;
+
+            text-decoration: none;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Back */
+
+        .back-home {
+            display: block;
+
+            text-align: center;
+
+            margin-top: 18px;
+
+            color: #6b7280;
+
+            font-size: 13px;
+
+            text-decoration: none;
+
+            transition: color 0.2s ease;
+        }
+
+        .back-home:hover {
+            color: #c4b5fd;
+        }
+
+        /* Security text */
+
+        .security-note {
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            gap: 6px;
+
+            margin-top: 22px;
+
+            color: #4b5563;
+
+            font-size: 11px;
+        }
+
+        /* Mobile */
+
+        @media (max-width: 520px) {
+
+            body {
+                padding: 18px;
+            }
+
+            .signup-container {
+                padding: 30px 22px;
+
+                border-radius: 23px;
+            }
+
+            .logo {
+                font-size: 25px;
+            }
+
+            .logo-icon {
+                width: 34px;
+                height: 34px;
+
+                font-size: 17px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="glow glow-one"></div>
+    <div class="glow glow-two"></div>
+
+
+    <div class="signup-container">
+
+        <div class="logo">
+            <span class="logo-icon">⚡</span>
+            AI Toolbox
+        </div>
+
+        <div class="subtitle">
+            Create your account and unlock powerful AI tools
+        </div>
+
+
+        <form id="signupForm">
+
+            <div class="form-group">
+
+                <label for="name">
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="Enter your name"
+                    autocomplete="name"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email Address
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Create a password"
+                    minlength="6"
+                    autocomplete="new-password"
+                    required
+                >
+
+            </div>
+
+
+            <div class="terms">
+
+                <input
+                    type="checkbox"
+                    id="terms"
+                    name="terms"
+                    required
+                >
+
+                <label for="terms">
+
+                    I agree to the
+                    <a
+                        href="#"
+                        onclick="return false;"
+                    >
+                        Terms & Conditions
+                    </a>
+
+                </label>
+
+            </div>
+
+
+            <button
+                type="submit"
+                id="signupButton"
+            >
+                Create Account
+            </button>
+
+        </form>
+
+
+        <div id="message"></div>
+
+
+        <div class="login-link">
+
+            Already have an account?
+
+            <a href="login.html">
+                Login
+            </a>
+
+        </div>
+
+
+        <a
+            href="index.html"
+            class="back-home"
+        >
+            ← Back to AI Toolbox
+        </a>
+
+
+        <div class="security-note">
+            🔒 Your account information is securely protected
+        </div>
+
+    </div>
+
+
+    <script>
+
+        const signupForm =
+            document.getElementById("signupForm");
+
+        const signupButton =
+            document.getElementById("signupButton");
+
+        const message =
+            document.getElementById("message");
+
+
+        function showMessage(
+            text,
+            type = "error"
+        ) {
+
+            message.style.display = "block";
+
+            message.textContent = text;
+
+
+            if (type === "success") {
+
+                message.style.background =
+                    "rgba(34,197,94,0.12)";
+
+                message.style.color =
+                    "#86efac";
+
+                message.style.borderColor =
+                    "rgba(34,197,94,0.20)";
+
+            } else {
+
+                message.style.background =
+                    "rgba(239,68,68,0.12)";
+
+                message.style.color =
+                    "#fca5a5";
+
+                message.style.borderColor =
+                    "rgba(239,68,68,0.20)";
+            }
+        }
+
+
+        signupForm.addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+
+                message.style.display = "none";
+
+                message.textContent = "";
+
+
+                const name =
+                    document
+                        .getElementById("name")
+                        .value
+                        .trim();
+
+
+                const email =
+                    document
+                        .getElementById("email")
+                        .value
+                        .trim();
+
+
+                const password =
+                    document
+                        .getElementById("password")
+                        .value;
+
+
+                const terms =
+                    document
+                        .getElementById("terms")
+                        .checked;
+
+
+                if (!name || !email || !password) {
+
+                    showMessage(
+                        "Please fill all fields."
+                    );
+
+                    return;
+                }
+
+
+                if (password.length < 6) {
+
+                    showMessage(
+                        "Password must be at least 6 characters."
+                    );
+
+                    return;
+                }
+
+
+                if (!terms) {
+
+                    showMessage(
+                        "Please accept the Terms & Conditions."
+                    );
+
+                    return;
+                }
+
+
+                signupButton.disabled = true;
+
+                signupButton.textContent =
+                    "Creating Account...";
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            "/api/auth/signup",
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                credentials: "include",
+
+                                body: JSON.stringify({
+                                    name: name,
+                                    email: email,
+                                    password: password
+                                })
+                            }
+                        );
+
+
+                    const data =
+                        await response.json();
+
+
+                    if (!response.ok) {
+
+                        showMessage(
+                            data.error ||
+                            "Signup failed."
+                        );
+
+                        signupButton.disabled =
+                            false;
+
+                        signupButton.textContent =
+                            "Create Account";
+
+                        return;
+                    }
+
+
+                    showMessage(
+                        data.message ||
+                        "Account created successfully! Redirecting...",
+                        "success"
+                    );
+
+
+                    signupButton.textContent =
+                        "Account Created ✓";
+
+
+                    setTimeout(
+                        function() {
+
+                            window.location.href =
+                                "login.html";
+
+                        },
+                        1200
+                    );
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Signup error:",
+                        error
+                    );
+
+
+                    showMessage(
+                        "Server connection failed. Please try again."
+                    );
+
+
+                    signupButton.disabled =
+                        false;
+
+                    signupButton.textContent =
+                        "Create Account";
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+</html>

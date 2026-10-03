@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>AI Image Generator - AI Toolbox</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #070711;
+            --card: rgba(18, 18, 35, 0.78);
+            --border: rgba(255,255,255,0.10);
+            --text: #f5f5ff;
+            --muted: #a6a6bd;
+            --purple: #8b5cf6;
+            --pink: #ec4899;
+            --cyan: #22d3ee;
+        }
+
+        body {
+
+            min-height: 100vh;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            color: var(--text);
+
+            background:
+                radial-gradient(
+                    circle at 15% 15%,
+                    rgba(139,92,246,0.20),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 85% 20%,
+                    rgba(236,72,153,0.15),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 50% 90%,
+                    rgba(34,211,238,0.08),
+                    transparent 35%
+                ),
+                var(--bg);
+        }
+
+        body::before {
+
+            content: "";
+
+            position: fixed;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            background-image:
+                linear-gradient(
+                    rgba(255,255,255,0.018) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255,255,255,0.018) 1px,
+                    transparent 1px
+                );
+
+            background-size: 40px 40px;
+
+            mask-image:
+                linear-gradient(
+                    to bottom,
+                    black,
+                    transparent
+                );
+
+            z-index: -1;
+        }
+
+        /* NAVBAR */
+
+        nav {
+
+            width: 100%;
+
+            padding: 18px 7%;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            background:
+                rgba(7,7,17,0.72);
+
+            border-bottom:
+                1px solid var(--border);
+
+            backdrop-filter: blur(18px);
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 20;
+        }
+
+        .logo {
+
+            text-decoration: none;
+
+            font-size: 24px;
+
+            font-weight: 900;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    var(--purple),
+                    var(--pink),
+                    var(--cyan)
+                );
+
+            background-clip: text;
+
+            -webkit-background-clip: text;
+
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back {
+
+            text-decoration: none;
+
+            color: #d8d8e8;
+
+            font-weight: 700;
+
+            padding: 10px 16px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 10px;
+
+            background:
+                rgba(255,255,255,0.04);
+
+            transition: 0.25s;
+        }
+
+        .back:hover {
+
+            color: white;
+
+            border-color:
+                rgba(139,92,246,0.55);
+
+            background:
+                rgba(139,92,246,0.12);
+
+            transform:
+                translateY(-1px);
+        }
+
+        /* PAGE */
+
+        .page {
+
+            width: 92%;
+
+            max-width: 1050px;
+
+            margin: 55px auto 80px;
+        }
+
+        /* HEADER */
+
+        .header {
+
+            text-align: center;
+
+            margin-bottom: 38px;
+        }
+
+        .badge {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            padding: 8px 14px;
+
+            border-radius: 999px;
+
+            border:
+                1px solid
+                rgba(139,92,246,0.30);
+
+            background:
+                rgba(139,92,246,0.09);
+
+            color: #c4b5fd;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            margin-bottom: 18px;
+        }
+
+        .badge span {
+
+            width: 7px;
+
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #22c55e;
+
+            box-shadow:
+                0 0 12px #22c55e;
+        }
+
+        .header h1 {
+
+            font-size:
+                clamp(35px, 5vw, 56px);
+
+            line-height: 1.08;
+
+            letter-spacing: -1.5px;
+
+            margin-bottom: 15px;
+        }
+
+        .gradient-text {
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #ffffff,
+                    #c4b5fd,
+                    #67e8f9
+                );
+
+            background-clip: text;
+
+            -webkit-background-clip: text;
+
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+
+            color: var(--muted);
+
+            font-size: 17px;
+
+            line-height: 1.7;
+        }
+
+        /* GRID */
+
+        .main-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 0.72fr;
+
+            gap: 24px;
+
+            align-items: start;
+        }
+
+        /* CARD */
+
+        .card {
+
+            background: var(--card);
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 24px;
+
+            padding: 30px;
+
+            box-shadow:
+                0 25px 80px
+                rgba(0,0,0,0.35),
+
+                inset 0 1px 0
+                rgba(255,255,255,0.04);
+
+            backdrop-filter: blur(20px);
+        }
+
+        /* CARD TITLE */
+
+        .card-title {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 26px;
+        }
+
+        .icon-box {
+
+            width: 44px;
+
+            height: 44px;
+
+            display: grid;
+
+            place-items: center;
+
+            border-radius: 13px;
+
+            font-size: 21px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(139,92,246,0.20),
+                    rgba(34,211,238,0.12)
+                );
+
+            border:
+                1px solid
+                rgba(139,92,246,0.22);
+        }
+
+        .card-title h2 {
+
+            font-size: 20px;
+        }
+
+        .card-title p {
+
+            color: var(--muted);
+
+            font-size: 13px;
+
+            margin-top: 4px;
+        }
+
+        /* FORM */
+
+        .field {
+
+            margin-bottom: 20px;
+        }
+
+        label {
+
+            display: block;
+
+            color: #e8e8f2;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            margin-bottom: 9px;
+        }
+
+        textarea,
+        select {
+
+            width: 100%;
+
+            border:
+                1px solid
+                rgba(255,255,255,0.10);
+
+            border-radius: 13px;
+
+            background:
+                rgba(255,255,255,0.045);
+
+            color: white;
+
+            outline: none;
+
+            transition: 0.25s;
+        }
+
+        textarea {
+
+            min-height: 155px;
+
+            resize: vertical;
+
+            padding: 15px;
+
+            font-family: inherit;
+
+            font-size: 15px;
+
+            line-height: 1.6;
+        }
+
+        textarea::placeholder {
+
+            color: #707087;
+        }
+
+        textarea:focus,
+        select:focus {
+
+            border-color:
+                rgba(139,92,246,0.75);
+
+            box-shadow:
+                0 0 0 4px
+                rgba(139,92,246,0.10);
+        }
+
+        select {
+
+            padding: 14px 15px;
+
+            font-size: 15px;
+
+            cursor: pointer;
+
+            appearance: none;
+
+            background-image:
+                linear-gradient(
+                    45deg,
+                    transparent 50%,
+                    #aaa 50%
+                ),
+                linear-gradient(
+                    135deg,
+                    #aaa 50%,
+                    transparent 50%
+                );
+
+            background-position:
+                calc(100% - 18px) 19px,
+                calc(100% - 13px) 19px;
+
+            background-size: 5px 5px;
+
+            background-repeat: no-repeat;
+        }
+
+        select option {
+
+            background: #141421;
+
+            color: white;
+        }
+
+        .options {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 18px;
+        }
+
+        /* GENERATE BUTTON */
+
+        .generate-btn {
+
+            position: relative;
+
+            overflow: hidden;
+
+            width: 100%;
+
+            border: none;
+
+            padding: 16px 20px;
+
+            border-radius: 13px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--purple),
+                    var(--pink)
+                );
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: 800;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 12px 30px
+                rgba(139,92,246,0.25);
+
+            transition: 0.25s;
+        }
+
+        .generate-btn::before {
+
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+
+            left: -100%;
+
+            width: 70%;
+
+            height: 100%;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255,255,255,0.25),
+                    transparent
+                );
+
+            transform:
+                skewX(-20deg);
+
+            transition: 0.6s;
+        }
+
+        .generate-btn:hover::before {
+
+            left: 130%;
+        }
+
+        .generate-btn:hover {
+
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 16px 38px
+                rgba(139,92,246,0.35);
+        }
+
+        .generate-btn:disabled {
+
+            opacity: 0.6;
+
+            cursor: not-allowed;
+
+            transform: none;
+        }
+
+        /* STATUS */
+
+        .status {
+
+            margin-top: 16px;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            color: #c4b5fd;
+
+            text-align: center;
+        }
+
+        .error {
+
+            color: #fca5a5;
+
+            background:
+                rgba(239,68,68,0.09);
+
+            border:
+                1px solid
+                rgba(239,68,68,0.20);
+
+            padding: 13px;
+
+            border-radius: 12px;
+
+            text-align: left;
+        }
+
+        /* TIPS */
+
+        .tips-card {
+
+            height: fit-content;
+        }
+
+        .tips-card h3 {
+
+            font-size: 18px;
+
+            margin-bottom: 18px;
+        }
+
+        .tip {
+
+            display: flex;
+
+            gap: 12px;
+
+            padding: 14px 0;
+
+            border-bottom:
+                1px solid
+                rgba(255,255,255,0.07);
+        }
+
+        .tip:last-child {
+
+            border-bottom: none;
+        }
+
+        .tip-icon {
+
+            width: 34px;
+
+            height: 34px;
+
+            flex-shrink: 0;
+
+            display: grid;
+
+            place-items: center;
+
+            border-radius: 10px;
+
+            background:
+                rgba(255,255,255,0.05);
+        }
+
+        .tip strong {
+
+            display: block;
+
+            font-size: 14px;
+
+            margin-bottom: 4px;
+        }
+
+        .tip p {
+
+            color: var(--muted);
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+        /* RESULT */
+
+        .result-box {
+
+            display: none;
+
+            margin-top: 24px;
+
+            animation:
+                fadeUp 0.35s ease;
+        }
+
+        @keyframes fadeUp {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    translateY(12px);
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    translateY(0);
+            }
+        }
+
+        .result-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin-bottom: 18px;
+        }
+
+        .result-header h2 {
+
+            font-size: 20px;
+        }
+
+        .ai-tag {
+
+            padding: 7px 11px;
+
+            border-radius: 999px;
+
+            background:
+                rgba(34,211,238,0.08);
+
+            border:
+                1px solid
+                rgba(34,211,238,0.20);
+
+            color: #67e8f9;
+
+            font-size: 12px;
+
+            font-weight: 700;
+        }
+
+        .image-wrapper {
+
+            padding: 14px;
+
+            border-radius: 18px;
+
+            background:
+                rgba(0,0,0,0.22);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.08);
+        }
+
+        .result-box img {
+
+            width: 100%;
+
+            max-width: 100%;
+
+            display: block;
+
+            margin: auto;
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 15px 45px
+                rgba(0,0,0,0.40);
+        }
+
+        .download-btn {
+
+            display: block;
+
+            margin-top: 16px;
+
+            padding: 14px;
+
+            border-radius: 12px;
+
+            background:
+                rgba(255,255,255,0.06);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.10);
+
+            color: white;
+
+            text-decoration: none;
+
+            text-align: center;
+
+            font-size: 14px;
+
+            font-weight: 800;
+
+            transition: 0.25s;
+        }
+
+        .download-btn:hover {
+
+            background:
+                rgba(139,92,246,0.15);
+
+            border-color:
+                rgba(139,92,246,0.35);
+
+            transform:
+                translateY(-1px);
+        }
+
+        /* FOOTER */
+
+        .footer-note {
+
+            text-align: center;
+
+            color: #66667b;
+
+            font-size: 12px;
+
+            margin-top: 25px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 800px) {
+
+            .main-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            nav {
+
+                padding:
+                    16px 5%;
+            }
+
+            .logo {
+
+                font-size: 21px;
+            }
+
+            .back {
+
+                padding:
+                    8px 11px;
+
+                font-size: 13px;
+            }
+
+            .page {
+
+                width: 92%;
+
+                margin:
+                    38px auto 60px;
+            }
+
+            .header h1 {
+
+                font-size: 34px;
+            }
+
+            .header p {
+
+                font-size: 14px;
+            }
+
+            .card {
+
+                padding: 21px;
+
+                border-radius: 19px;
+            }
+
+            .options {
+
+                grid-template-columns: 1fr;
+
+                gap: 0;
+            }
+
+            .result-header {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- NAVBAR -->
+
+<nav>
+
+    <a
+        href="index.html"
+        class="logo"
+    >
+        AI Toolbox
+    </a>
+
+
+    <a
+        href="index.html"
+        class="back"
+    >
+        ← Back Home
+    </a>
+
+</nav>
+
+
+<!-- PAGE -->
+
+<div class="page">
+
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <div class="badge">
+
+            <span></span>
+
+            AI IMAGE GENERATOR
+
+        </div>
+
+
+        <h1>
+
+            Turn your ideas into
+            <span class="gradient-text">
+                stunning images.
+            </span>
+
+        </h1>
+
+
+        <p>
+
+            Describe your idea, choose a style and let AI create it for you.
+
+        </p>
+
+    </div>
+
+
+    <!-- MAIN -->
+
+    <div class="main-grid">
+
+
+        <!-- GENERATOR CARD -->
+
+        <div class="card">
+
+
+            <div class="card-title">
+
+                <div class="icon-box">
+                    🎨
+                </div>
+
+
+                <div>
+
+                    <h2>
+                        Create an image
+                    </h2>
+
+                    <p>
+                        Describe what you want AI to generate.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- PROMPT -->
+
+            <div class="field">
+
+                <label for="prompt">
+                    Image Prompt
+                </label>
+
+
+                <textarea
+                    id="prompt"
+                    placeholder="Example: A futuristic AI robot sitting in a modern office, glowing blue holographic screens, cinematic lighting..."
+                ></textarea>
+
+            </div>
+
+
+            <!-- OPTIONS -->
+
+            <div class="options">
+
+
+                <div class="field">
+
+                    <label for="style">
+                        Style
+                    </label>
+
+
+                    <select id="style">
+
+                        <option value="AI Art">
+                            AI Art
+                        </option>
+
+                        <option value="Realistic">
+                            Realistic
+                        </option>
+
+                        <option value="3D">
+                            3D
+                        </option>
+
+                        <option value="Anime">
+                            Anime
+                        </option>
+
+                        <option value="Cartoon">
+                            Cartoon
+                        </option>
+
+                        <option value="Digital Art">
+                            Digital Art
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="size">
+                        Image Size
+                    </label>
+
+
+                    <select id="size">
+
+                        <option value="1024x1024">
+                            Square
+                        </option>
+
+                        <option value="1536x1024">
+                            Landscape
+                        </option>
+
+                        <option value="1024x1536">
+                            Portrait
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- BUTTON -->
+
+            <button
+                class="generate-btn"
+                id="generateBtn"
+                onclick="generateImage()"
+            >
+
+                ✨ Generate Image
+
+            </button>
+
+
+            <!-- STATUS -->
+
+            <div
+                id="status"
+                class="status"
+            ></div>
+
+        </div>
+
+
+        <!-- TIPS -->
+
+        <div class="card tips-card">
+
+            <h3>
+                💡 Create better images
+            </h3>
+
+
+            <div class="tip">
+
+                <div class="tip-icon">
+                    📝
+                </div>
+
+                <div>
+
+                    <strong>
+                        Be descriptive
+                    </strong>
+
+                    <p>
+                        Mention the subject, environment, lighting, mood and important details.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="tip">
+
+                <div class="tip-icon">
+                    🎨
+                </div>
+
+                <div>
+
+                    <strong>
+                        Try different styles
+                    </strong>
+
+                    <p>
+                        Experiment with realistic, 3D, anime and digital-art styles.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="tip">
+
+                <div class="tip-icon">
+                    📐
+                </div>
+
+                <div>
+
+                    <strong>
+                        Pick the right size
+                    </strong>
+
+                    <p>
+                        Square works well for general images, while landscape and portrait suit different layouts.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="tip">
+
+                <div class="tip-icon">
+                    ✨
+                </div>
+
+                <div>
+
+                    <strong>
+                        Experiment
+                    </strong>
+
+                    <p>
+                        Small changes to your prompt can create very different results.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- RESULT -->
+
+    <div
+        id="resultBox"
+        class="card result-box"
+    >
+
+        <div class="result-header">
+
+            <h2>
+                ✨ Generated Image
+            </h2>
+
+
+            <div class="ai-tag">
+                AI GENERATED
+            </div>
+
+        </div>
+
+
+        <div class="image-wrapper">
+
+            <img
+                id="generatedImage"
+                src=""
+                alt="Generated AI Image"
+            >
+
+        </div>
+
+
+        <a
+            id="downloadBtn"
+            class="download-btn"
+            href="#"
+            download="ai-generated-image.png"
+        >
+
+            ⬇️ Download Image
+
+        </a>
+
+    </div>
+
+
+    <div class="footer-note">
+
+        AI Toolbox • Create anything with AI
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+async function generateImage() {
+
+    const prompt =
+        document
+            .getElementById("prompt")
+            .value
+            .trim();
+
+
+    const style =
+        document
+            .getElementById("style")
+            .value;
+
+
+    const size =
+        document
+            .getElementById("size")
+            .value;
+
+
+    const button =
+        document
+            .getElementById("generateBtn");
+
+
+    const status =
+        document
+            .getElementById("status");
+
+
+    const resultBox =
+        document
+            .getElementById("resultBox");
+
+
+    const generatedImage =
+        document
+            .getElementById("generatedImage");
+
+
+    const downloadBtn =
+        document
+            .getElementById("downloadBtn");
+
+
+    /* PROMPT CHECK */
+
+    if (!prompt) {
+
+        status.innerHTML =
+            `<div class="error">
+                ⚠️ Please enter an image prompt.
+            </div>`;
+
+        return;
+    }
+
+
+    /* RESET */
+
+    resultBox.style.display =
+        "none";
+
+
+    /* LOADING */
+
+    button.disabled =
+        true;
+
+
+    button.textContent =
+        "⏳ Generating Image...";
+
+
+    status.innerHTML =
+        "🤖 AI is creating your image. Please wait...";
+
+
+    try {
+
+        /* API REQUEST */
+
+        const response =
+            await fetch(
+                "/api/generate-image",
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    credentials: "include",
+
+                    body: JSON.stringify({
+                        prompt,
+                        style,
+                        size
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        /* ERROR */
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Image generation failed."
+            );
+
+        }
+
+
+        /* IMAGE CHECK */
+
+        if (!data.image) {
+
+            throw new Error(
+                "No image was returned."
+            );
+
+        }
+
+
+        /* SHOW IMAGE */
+
+        generatedImage.src =
+            data.image;
+
+
+        downloadBtn.href =
+            data.image;
+
+
+        resultBox.style.display =
+            "block";
+
+
+        status.textContent =
+            "✅ Image generated successfully!";
+
+
+        /* SCROLL */
+
+        resultBox.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Image generation error:",
+            error
+        );
+
+
+        status.innerHTML =
+            `<div class="error">
+                ❌ ${error.message}
+            </div>`;
+
+    } finally {
+
+        button.disabled =
+            false;
+
+
+        button.textContent =
+            "✨ Generate Image";
+
+    }
+
+}
+
+</script>
+
+
+</body>
+
+</html>

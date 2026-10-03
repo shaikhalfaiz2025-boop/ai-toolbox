@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login - AI Toolbox</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        html {
+            min-height: 100%;
+        }
+
+        body {
+            min-height: 100vh;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 25px;
+
+            color: #f8fafc;
+
+            background:
+                radial-gradient(
+                    circle at 10% 10%,
+                    rgba(124, 58, 237, 0.28),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 90% 20%,
+                    rgba(236, 72, 153, 0.20),
+                    transparent 28%
+                ),
+                radial-gradient(
+                    circle at 50% 100%,
+                    rgba(59, 130, 246, 0.15),
+                    transparent 35%
+                ),
+                #070816;
+
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ================= BACKGROUND GRID ================= */
+
+        body::before {
+            content: "";
+
+            position: fixed;
+            inset: 0;
+
+            pointer-events: none;
+
+            background-image:
+                linear-gradient(
+                    rgba(255,255,255,0.018) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255,255,255,0.018) 1px,
+                    transparent 1px
+                );
+
+            background-size: 45px 45px;
+        }
+
+        /* ================= GLOW ================= */
+
+        .glow {
+            position: fixed;
+
+            width: 260px;
+            height: 260px;
+
+            border-radius: 50%;
+
+            filter: blur(80px);
+
+            pointer-events: none;
+        }
+
+        .glow-one {
+            top: -100px;
+            left: -100px;
+
+            background: rgba(124, 58, 237, 0.20);
+        }
+
+        .glow-two {
+            right: -100px;
+            bottom: -100px;
+
+            background: rgba(236, 72, 153, 0.16);
+        }
+
+        /* ================= LOGIN CARD ================= */
+
+        .login-card {
+            position: relative;
+            z-index: 2;
+
+            width: min(440px, 100%);
+
+            padding: 38px;
+
+            background: rgba(15, 23, 42, 0.76);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.10);
+
+            border-radius: 24px;
+
+            box-shadow:
+                0 30px 90px rgba(0,0,0,0.40);
+
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        /* ================= LOGO ================= */
+
+        .logo {
+            text-align: center;
+
+            margin-bottom: 28px;
+
+            font-size: 25px;
+            font-weight: 900;
+
+            color: #ffffff;
+        }
+
+        .logo span {
+            color: #a78bfa;
+        }
+
+        /* ================= ICON ================= */
+
+        .login-icon {
+            width: 68px;
+            height: 68px;
+
+            margin: 0 auto 18px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 18px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7c3aed,
+                    #db2777
+                );
+
+            font-size: 28px;
+
+            box-shadow:
+                0 15px 35px rgba(124,58,237,0.28);
+        }
+
+        /* ================= TITLE ================= */
+
+        h1 {
+            text-align: center;
+
+            margin-bottom: 9px;
+
+            color: #ffffff;
+
+            font-size: 30px;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            text-align: center;
+
+            margin-bottom: 30px;
+
+            color: #94a3b8;
+
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* ================= FORM ================= */
+
+        .field {
+            margin-bottom: 19px;
+        }
+
+        .field label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            color: #cbd5e1;
+
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        input[type="email"],
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+
+            padding: 14px 15px;
+
+            color: #f8fafc;
+
+            background: rgba(2, 6, 23, 0.55);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.10);
+
+            border-radius: 12px;
+
+            outline: none;
+
+            font-size: 14px;
+
+            transition: 0.2s;
+        }
+
+        input::placeholder {
+            color: #64748b;
+        }
+
+        input:focus {
+            border-color: rgba(167,139,250,0.70);
+
+            box-shadow:
+                0 0 0 3px rgba(124,58,237,0.13);
+        }
+
+        .input-wrap input {
+            padding-right: 50px;
+        }
+
+        /* ================= PASSWORD TOGGLE ================= */
+
+        .toggle-password {
+            position: absolute;
+
+            right: 12px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            width: 34px;
+            height: 34px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: none;
+
+            background: transparent;
+
+            color: #94a3b8;
+
+            cursor: pointer;
+
+            border-radius: 8px;
+
+            font-size: 17px;
+
+            transition: 0.2s;
+        }
+
+        .toggle-password:hover {
+            color: #ffffff;
+            background: rgba(255,255,255,0.06);
+        }
+
+        /* ================= OPTIONS ================= */
+
+        .login-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 10px;
+
+            margin:
+                4px
+                0
+                22px;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+
+            gap: 8px;
+
+            color: #94a3b8;
+
+            font-size: 13px;
+            font-weight: 500;
+
+            cursor: pointer;
+        }
+
+        .remember input {
+            width: 15px;
+            height: 15px;
+
+            accent-color: #7c3aed;
+
+            cursor: pointer;
+        }
+
+        .forgot {
+            color: #a78bfa;
+
+            text-decoration: none;
+
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .forgot:hover {
+            color: #c4b5fd;
+            text-decoration: underline;
+        }
+
+        /* ================= LOGIN BUTTON ================= */
+
+        .login-button {
+            width: 100%;
+
+            padding: 14px 18px;
+
+            border: none;
+            border-radius: 12px;
+
+            color: #ffffff;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7c3aed,
+                    #db2777
+                );
+
+            font-size: 14px;
+            font-weight: 800;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 12px 32px rgba(124,58,237,0.25);
+
+            transition: 0.2s;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 16px 38px rgba(124,58,237,0.35);
+        }
+
+        .login-button:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ================= MESSAGE ================= */
+
+        .message {
+            display: none;
+
+            margin-top: 16px;
+
+            padding: 12px 14px;
+
+            border-radius: 11px;
+
+            text-align: center;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            line-height: 1.4;
+        }
+
+        .message.success {
+            display: block;
+
+            color: #86efac;
+
+            background: rgba(34,197,94,0.09);
+
+            border:
+                1px solid
+                rgba(34,197,94,0.20);
+        }
+
+        .message.error {
+            display: block;
+
+            color: #fca5a5;
+
+            background: rgba(239,68,68,0.09);
+
+            border:
+                1px solid
+                rgba(239,68,68,0.20);
+        }
+
+        .message.loading {
+            display: block;
+
+            color: #c4b5fd;
+
+            background: rgba(124,58,237,0.09);
+
+            border:
+                1px solid
+                rgba(124,58,237,0.20);
+        }
+
+        /* ================= DIVIDER ================= */
+
+        .divider {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            margin: 25px 0;
+        }
+
+        .divider-line {
+            flex: 1;
+
+            height: 1px;
+
+            background:
+                rgba(255,255,255,0.08);
+        }
+
+        .divider-text {
+            color: #475569;
+
+            font-size: 11px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+        }
+
+        /* ================= BACK ================= */
+
+        .back {
+            display: block;
+
+            text-align: center;
+
+            color: #94a3b8;
+
+            text-decoration: none;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            transition: 0.2s;
+        }
+
+        .back:hover {
+            color: #c4b5fd;
+        }
+
+        /* ================= FOOTER ================= */
+
+        .footer {
+            margin-top: 22px;
+
+            text-align: center;
+
+            color: #475569;
+
+            font-size: 11px;
+        }
+
+        /* ================= MOBILE ================= */
+
+        @media (max-width: 500px) {
+
+            body {
+                padding: 18px;
+            }
+
+            .login-card {
+                padding: 28px 21px;
+
+                border-radius: 20px;
+            }
+
+            .logo {
+                font-size: 23px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+
+            .login-options {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .forgot {
+                align-self: flex-end;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <div class="glow glow-one"></div>
+    <div class="glow glow-two"></div>
+
+
+    <div class="login-card">
+
+
+        <!-- LOGO -->
+
+        <div class="logo">
+            ⚡ AI <span>Toolbox</span>
+        </div>
+
+
+        <!-- LOGIN ICON -->
+
+        <div class="login-icon">
+            🔐
+        </div>
+
+
+        <!-- TITLE -->
+
+        <h1>
+            Welcome Back
+        </h1>
+
+
+        <p class="subtitle">
+            Login to continue to your AI workspace.
+        </p>
+
+
+        <!-- EMAIL -->
+
+        <div class="field">
+
+            <label for="email">
+                Email Address
+            </label>
+
+            <input
+                type="email"
+                id="email"
+                placeholder="you@example.com"
+                autocomplete="email"
+            >
+
+        </div>
+
+
+        <!-- PASSWORD -->
+
+        <div class="field">
+
+            <label for="password">
+                Password
+            </label>
+
+
+            <div class="input-wrap">
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                >
+
+
+                <button
+                    type="button"
+                    class="toggle-password"
+                    onclick="togglePassword()"
+                    aria-label="Show password"
+                >
+                    👁️
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- OPTIONS -->
+
+        <div class="login-options">
+
+            <label class="remember">
+
+                <input
+                    type="checkbox"
+                    id="remember"
+                >
+
+                Remember me
+
+            </label>
+
+
+            <a
+                href="forgot-password.html"
+                class="forgot"
+            >
+                Forgot password?
+            </a>
+
+        </div>
+
+
+        <!-- LOGIN -->
+
+        <button
+            type="button"
+            class="login-button"
+            id="loginButton"
+            onclick="loginUser()"
+        >
+            Login
+        </button>
+
+
+        <!-- MESSAGE -->
+
+        <div
+            id="message"
+            class="message"
+        ></div>
+
+
+        <!-- DIVIDER -->
+
+        <div class="divider">
+
+            <div class="divider-line"></div>
+
+            <div class="divider-text">
+                AI Toolbox
+            </div>
+
+            <div class="divider-line"></div>
+
+        </div>
+
+
+        <!-- BACK -->
+
+        <a
+            href="index.html"
+            class="back"
+        >
+            ← Back to AI Toolbox
+        </a>
+
+
+        <div class="footer">
+            Your personal AI workspace
+        </div>
+
+
+    </div>
+
+
+
+    <script>
+
+        /* ============================================
+           TOGGLE PASSWORD
+        ============================================ */
+
+        function togglePassword() {
+
+            const password =
+                document.getElementById("password");
+
+            const button =
+                document.querySelector(
+                    ".toggle-password"
+                );
+
+
+            if (
+                password.type ===
+                "password"
+            ) {
+
+                password.type = "text";
+
+                button.textContent = "🙈";
+
+                button.setAttribute(
+                    "aria-label",
+                    "Hide password"
+                );
+
+            } else {
+
+                password.type =
+                    "password";
+
+                button.textContent = "👁️";
+
+                button.setAttribute(
+                    "aria-label",
+                    "Show password"
+                );
+
+            }
+
+        }
+
+
+
+        /* ============================================
+           LOGIN
+        ============================================ */
+
+        async function loginUser() {
+
+            const email =
+                document
+                    .getElementById("email")
+                    .value
+                    .trim();
+
+
+            const password =
+                document
+                    .getElementById("password")
+                    .value;
+
+
+            const message =
+                document.getElementById(
+                    "message"
+                );
+
+
+            const button =
+                document.getElementById(
+                    "loginButton"
+                );
+
+
+
+            /* VALIDATION */
+
+            if (!email || !password) {
+
+                message.className =
+                    "message error";
+
+                message.textContent =
+                    "Please enter email and password.";
+
+                return;
+            }
+
+
+
+            /* LOADING */
+
+            button.disabled = true;
+
+            button.textContent =
+                "Logging in...";
+
+
+            message.className =
+                "message loading";
+
+            message.textContent =
+                "Checking your account...";
+
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/api/auth/login",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            credentials: "include",
+
+                            body:
+                                JSON.stringify({
+                                    email: email,
+                                    password: password
+                                })
+                        }
+                    );
+
+
+
+                const data =
+                    await response.json();
+
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.error ||
+                        "Login failed."
+                    );
+
+                }
+
+
+
+                /* SUCCESS */
+
+                message.className =
+                    "message success";
+
+                message.textContent =
+                    "Login successful ✅";
+
+
+                button.textContent =
+                    "Success ✓";
+
+
+
+                setTimeout(
+                    function () {
+
+                        window.location.href =
+                            "dashboard.html";
+
+                    },
+                    700
+                );
+
+            }
+
+
+            catch (error) {
+
+                console.error(
+                    "Login error:",
+                    error
+                );
+
+
+                message.className =
+                    "message error";
+
+                message.textContent =
+                    "❌ " +
+                    (
+                        error.message ||
+                        "Login failed."
+                    );
+
+
+                button.disabled = false;
+
+                button.textContent =
+                    "Login";
+
+            }
+
+        }
+
+
+
+        /* ============================================
+           ENTER KEY LOGIN
+        ============================================ */
+
+        document
+            .getElementById("password")
+            .addEventListener(
+                "keydown",
+                function(event) {
+
+                    if (
+                        event.key ===
+                        "Enter"
+                    ) {
+
+                        loginUser();
+
+                    }
+
+                }
+            );
+
+    </script>
+
+</body>
+</html>

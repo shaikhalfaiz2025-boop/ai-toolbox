@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PDF Summarizer - AI Toolbox</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #070711;
+            --card: rgba(18, 18, 35, 0.78);
+            --border: rgba(255, 255, 255, 0.10);
+            --text: #f5f5ff;
+            --muted: #a6a6bd;
+            --purple: #8b5cf6;
+            --pink: #ec4899;
+            --cyan: #22d3ee;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
+            color: var(--text);
+
+            background:
+                radial-gradient(
+                    circle at 15% 15%,
+                    rgba(139, 92, 246, 0.20),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 85% 20%,
+                    rgba(236, 72, 153, 0.15),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 50% 90%,
+                    rgba(34, 211, 238, 0.08),
+                    transparent 35%
+                ),
+                var(--bg);
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+
+            background-image:
+                linear-gradient(
+                    rgba(255,255,255,0.018) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255,255,255,0.018) 1px,
+                    transparent 1px
+                );
+
+            background-size: 40px 40px;
+
+            mask-image:
+                linear-gradient(
+                    to bottom,
+                    black,
+                    transparent
+                );
+
+            z-index: -1;
+        }
+
+        /* NAVBAR */
+
+        nav {
+            width: 100%;
+
+            padding: 18px 7%;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            background: rgba(7, 7, 17, 0.72);
+
+            border-bottom:
+                1px solid var(--border);
+
+            backdrop-filter: blur(18px);
+
+            position: sticky;
+            top: 0;
+
+            z-index: 20;
+        }
+
+        .logo {
+            text-decoration: none;
+
+            font-size: 24px;
+            font-weight: 900;
+
+            letter-spacing: -0.5px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    var(--purple),
+                    var(--pink),
+                    var(--cyan)
+                );
+
+            background-clip: text;
+            -webkit-background-clip: text;
+
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back {
+            text-decoration: none;
+
+            color: #d8d8e8;
+
+            font-weight: 700;
+
+            padding: 10px 16px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 10px;
+
+            background:
+                rgba(255,255,255,0.04);
+
+            transition: 0.25s;
+        }
+
+        .back:hover {
+            color: white;
+
+            border-color:
+                rgba(139,92,246,0.55);
+
+            background:
+                rgba(139,92,246,0.12);
+
+            transform:
+                translateY(-1px);
+        }
+
+        /* MAIN */
+
+        .container {
+            width: 92%;
+
+            max-width: 1050px;
+
+            margin: 55px auto 80px;
+        }
+
+        /* HEADER */
+
+        .header {
+            text-align: center;
+
+            margin-bottom: 38px;
+        }
+
+        .badge {
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            padding: 8px 14px;
+
+            border-radius: 999px;
+
+            border:
+                1px solid
+                rgba(139,92,246,0.30);
+
+            background:
+                rgba(139,92,246,0.09);
+
+            color: #c4b5fd;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            margin-bottom: 18px;
+        }
+
+        .badge span {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #22c55e;
+
+            box-shadow:
+                0 0 12px #22c55e;
+        }
+
+        .header h1 {
+            font-size:
+                clamp(34px, 5vw, 56px);
+
+            line-height: 1.08;
+
+            margin-bottom: 15px;
+
+            letter-spacing: -1.5px;
+        }
+
+        .gradient-text {
+            background:
+                linear-gradient(
+                    90deg,
+                    #ffffff,
+                    #c4b5fd,
+                    #67e8f9
+                );
+
+            background-clip: text;
+            -webkit-background-clip: text;
+
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: var(--muted);
+
+            font-size: 17px;
+
+            line-height: 1.7;
+        }
+
+        /* GRID */
+
+        .main-grid {
+            display: grid;
+
+            grid-template-columns:
+                1fr 0.75fr;
+
+            gap: 24px;
+
+            align-items: start;
+        }
+
+        /* CARD */
+
+        .card {
+            background: var(--card);
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 24px;
+
+            padding: 30px;
+
+            box-shadow:
+                0 25px 80px rgba(0,0,0,0.35),
+                inset 0 1px 0
+                rgba(255,255,255,0.04);
+
+            backdrop-filter: blur(20px);
+        }
+
+        /* TITLE */
+
+        .card-title {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 26px;
+        }
+
+        .icon-box {
+            width: 44px;
+            height: 44px;
+
+            display: grid;
+
+            place-items: center;
+
+            border-radius: 13px;
+
+            font-size: 21px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(139,92,246,0.20),
+                    rgba(34,211,238,0.12)
+                );
+
+            border:
+                1px solid
+                rgba(139,92,246,0.22);
+        }
+
+        .card-title h2 {
+            font-size: 20px;
+        }
+
+        .card-title p {
+            color: var(--muted);
+
+            font-size: 13px;
+
+            margin-top: 4px;
+        }
+
+        /* UPLOAD */
+
+        .upload-box {
+            position: relative;
+
+            border:
+                2px dashed
+                rgba(139,92,246,0.35);
+
+            border-radius: 18px;
+
+            padding: 45px 25px;
+
+            text-align: center;
+
+            background:
+                rgba(139,92,246,0.045);
+
+            margin-bottom: 25px;
+
+            transition: 0.25s;
+        }
+
+        .upload-box:hover {
+            border-color:
+                rgba(139,92,246,0.65);
+
+            background:
+                rgba(139,92,246,0.075);
+        }
+
+        .upload-icon {
+            width: 70px;
+            height: 70px;
+
+            display: grid;
+
+            place-items: center;
+
+            margin: 0 auto 18px;
+
+            border-radius: 20px;
+
+            font-size: 35px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(139,92,246,0.18),
+                    rgba(236,72,153,0.12)
+                );
+
+            border:
+                1px solid
+                rgba(255,255,255,0.08);
+
+            box-shadow:
+                0 15px 35px
+                rgba(0,0,0,0.25);
+        }
+
+        .upload-box h3 {
+            font-size: 18px;
+
+            margin-bottom: 8px;
+        }
+
+        .upload-box p {
+            color: var(--muted);
+
+            font-size: 14px;
+
+            margin-bottom: 20px;
+
+            line-height: 1.5;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .upload-label {
+            display: inline-block;
+
+            padding: 13px 20px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--purple),
+                    var(--pink)
+                );
+
+            color: white;
+
+            border-radius: 12px;
+
+            font-size: 14px;
+
+            font-weight: 800;
+
+            cursor: pointer;
+
+            transition: 0.25s;
+
+            box-shadow:
+                0 10px 25px
+                rgba(139,92,246,0.22);
+        }
+
+        .upload-label:hover {
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 14px 30px
+                rgba(139,92,246,0.30);
+        }
+
+        #fileName {
+            margin-top: 16px;
+
+            color: #c4b5fd;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            word-break: break-word;
+        }
+
+        /* FORM */
+
+        .field {
+            margin-bottom: 21px;
+        }
+
+        label {
+            display: block;
+
+            color: #e8e8f2;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            margin-bottom: 9px;
+        }
+
+        select {
+            width: 100%;
+
+            padding: 14px 15px;
+
+            border:
+                1px solid
+                rgba(255,255,255,0.10);
+
+            border-radius: 13px;
+
+            background:
+                rgba(255,255,255,0.045);
+
+            color: white;
+
+            font-size: 15px;
+
+            outline: none;
+
+            cursor: pointer;
+
+            transition: 0.25s;
+
+            appearance: none;
+
+            background-image:
+                linear-gradient(
+                    45deg,
+                    transparent 50%,
+                    #aaa 50%
+                ),
+                linear-gradient(
+                    135deg,
+                    #aaa 50%,
+                    transparent 50%
+                );
+
+            background-position:
+                calc(100% - 18px) 19px,
+                calc(100% - 13px) 19px;
+
+            background-size: 5px 5px;
+
+            background-repeat: no-repeat;
+        }
+
+        select:focus {
+            border-color:
+                rgba(139,92,246,0.75);
+
+            box-shadow:
+                0 0 0 4px
+                rgba(139,92,246,0.10);
+        }
+
+        select option {
+            background: #141421;
+
+            color: white;
+        }
+
+        /* BUTTON */
+
+        .summarize-btn {
+            position: relative;
+
+            overflow: hidden;
+
+            width: 100%;
+
+            padding: 16px 20px;
+
+            border: none;
+
+            border-radius: 13px;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: 800;
+
+            cursor: pointer;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--purple),
+                    var(--pink)
+                );
+
+            box-shadow:
+                0 12px 30px
+                rgba(139,92,246,0.25);
+
+            transition: 0.25s;
+        }
+
+        .summarize-btn::before {
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+            left: -100%;
+
+            width: 70%;
+            height: 100%;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255,255,255,0.25),
+                    transparent
+                );
+
+            transform:
+                skewX(-20deg);
+
+            transition: 0.6s;
+        }
+
+        .summarize-btn:hover::before {
+            left: 130%;
+        }
+
+        .summarize-btn:hover {
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 16px 38px
+                rgba(139,92,246,0.35);
+        }
+
+        .summarize-btn:active {
+            transform:
+                translateY(0);
+        }
+
+        .summarize-btn:disabled {
+            opacity: 0.60;
+
+            cursor: not-allowed;
+
+            transform: none;
+        }
+
+        /* STATUS */
+
+        #status {
+            display: none;
+
+            margin-top: 18px;
+
+            padding: 13px 15px;
+
+            border-radius: 12px;
+
+            background:
+                rgba(139,92,246,0.10);
+
+            border:
+                1px solid
+                rgba(139,92,246,0.20);
+
+            color: #c4b5fd;
+
+            text-align: center;
+
+            font-size: 14px;
+
+            font-weight: 700;
+        }
+
+        /* TIPS */
+
+        .tips-card {
+            height: fit-content;
+        }
+
+        .tips-card h3 {
+            font-size: 18px;
+
+            margin-bottom: 18px;
+        }
+
+        .tip {
+            display: flex;
+
+            gap: 12px;
+
+            padding: 14px 0;
+
+            border-bottom:
+                1px solid
+                rgba(255,255,255,0.07);
+        }
+
+        .tip:last-child {
+            border-bottom: none;
+        }
+
+        .tip-icon {
+            width: 34px;
+            height: 34px;
+
+            flex-shrink: 0;
+
+            display: grid;
+
+            place-items: center;
+
+            border-radius: 10px;
+
+            background:
+                rgba(255,255,255,0.05);
+        }
+
+        .tip strong {
+            display: block;
+
+            font-size: 14px;
+
+            margin-bottom: 4px;
+        }
+
+        .tip p {
+            color: var(--muted);
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+        /* RESULT */
+
+        .result-card {
+            display: none;
+
+            margin-top: 24px;
+
+            animation:
+                fadeUp 0.35s ease;
+        }
+
+        @keyframes fadeUp {
+
+            from {
+                opacity: 0;
+
+                transform:
+                    translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+
+                transform:
+                    translateY(0);
+            }
+
+        }
+
+        .result-header {
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin-bottom: 18px;
+        }
+
+        .result-header h2 {
+            font-size: 20px;
+        }
+
+        .ai-tag {
+            padding: 7px 11px;
+
+            border-radius: 999px;
+
+            background:
+                rgba(34,211,238,0.08);
+
+            border:
+                1px solid
+                rgba(34,211,238,0.20);
+
+            color: #67e8f9;
+
+            font-size: 12px;
+
+            font-weight: 700;
+        }
+
+        #result {
+            padding: 22px;
+
+            min-height: 200px;
+
+            border-radius: 15px;
+
+            background:
+                rgba(0,0,0,0.20);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.08);
+
+            color: #ededf7;
+
+            line-height: 1.8;
+
+            white-space: pre-wrap;
+
+            word-break: break-word;
+
+            font-size: 15px;
+        }
+
+        .copy-btn {
+            width: 100%;
+
+            margin-top: 15px;
+
+            padding: 14px;
+
+            border-radius: 12px;
+
+            border:
+                1px solid
+                rgba(255,255,255,0.10);
+
+            background:
+                rgba(255,255,255,0.06);
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.25s;
+        }
+
+        .copy-btn:hover {
+            background:
+                rgba(139,92,246,0.15);
+
+            border-color:
+                rgba(139,92,246,0.35);
+        }
+
+        /* FOOTER */
+
+        .footer-note {
+            text-align: center;
+
+            color: #66667b;
+
+            font-size: 12px;
+
+            margin-top: 25px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 800px) {
+
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tips-card {
+                order: 2;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            nav {
+                padding: 16px 5%;
+            }
+
+            .logo {
+                font-size: 21px;
+            }
+
+            .back {
+                padding: 8px 11px;
+
+                font-size: 13px;
+            }
+
+            .container {
+                width: 92%;
+
+                margin:
+                    38px auto 60px;
+            }
+
+            .header {
+                margin-bottom: 28px;
+            }
+
+            .header h1 {
+                font-size: 34px;
+            }
+
+            .header p {
+                font-size: 14px;
+            }
+
+            .card {
+                padding: 21px;
+
+                border-radius: 19px;
+            }
+
+            .upload-box {
+                padding: 35px 15px;
+            }
+
+            .result-header {
+                align-items: flex-start;
+
+                flex-direction: column;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+
+<nav>
+
+    <a
+        href="index.html"
+        class="logo"
+    >
+        AI Toolbox
+    </a>
+
+    <a
+        href="index.html"
+        class="back"
+    >
+        ← Back Home
+    </a>
+
+</nav>
+
+
+<div class="container">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <div class="badge">
+            <span></span>
+            AI PDF SUMMARIZER
+        </div>
+
+        <h1>
+            Turn long PDFs into
+            <span class="gradient-text">
+                simple summaries.
+            </span>
+        </h1>
+
+        <p>
+            Upload your PDF and let AI extract the important information for you.
+        </p>
+
+    </div>
+
+
+    <!-- MAIN GRID -->
+
+    <div class="main-grid">
+
+        <!-- SUMMARIZER CARD -->
+
+        <div class="card">
+
+            <div class="card-title">
+
+                <div class="icon-box">
+                    📄
+                </div>
+
+                <div>
+
+                    <h2>
+                        Summarize your PDF
+                    </h2>
+
+                    <p>
+                        Upload a document and choose how detailed you want the summary.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- UPLOAD -->
+
+            <div class="upload-box">
+
+                <div class="upload-icon">
+                    📄
+                </div>
+
+                <h3>
+                    Upload your PDF
+                </h3>
+
+                <p>
+                    Choose a PDF file from your computer to get started.
+                </p>
+
+
+                <label
+                    for="pdfFile"
+                    class="upload-label"
+                >
+                    📁 Choose PDF
+                </label>
+
+
+                <input
+                    type="file"
+                    id="pdfFile"
+                    accept=".pdf,application/pdf"
+                    onchange="showFileName()"
+                >
+
+
+                <div id="fileName"></div>
+
+            </div>
+
+
+            <!-- LENGTH -->
+
+            <div class="field">
+
+                <label for="summaryLength">
+                    Summary Length
+                </label>
+
+                <select id="summaryLength">
+
+                    <option value="Short">
+                        Short
+                    </option>
+
+                    <option
+                        value="Medium"
+                        selected
+                    >
+                        Medium
+                    </option>
+
+                    <option value="Detailed">
+                        Detailed
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- BUTTON -->
+
+            <button
+                id="summarizeBtn"
+                class="summarize-btn"
+                onclick="summarizePDF()"
+            >
+                ✨ Summarize PDF
+            </button>
+
+
+            <!-- STATUS -->
+
+            <div id="status">
+                🤖 AI is reading your PDF and creating a summary...
+            </div>
+
+        </div>
+
+
+        <!-- TIPS -->
+
+        <div class="card tips-card">
+
+            <h3>
+                💡 PDF summarizer tips
+            </h3>
+
+
+            <div class="tip">
+
+                <div class="tip-icon">
+                    📚
+                </div>
+
+                <div>
+
+                    <strong>
+                        Great for long documents
+                    </strong>
+
+                    <p>
+                        Quickly understand reports, notes, articles and other PDF documents.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="tip">
+
+                <div class="tip-icon">
+                    🎯
+                </div>
+
+                <div>
+
+                    <strong>
+                        Choose the right length
+                    </strong>
+
+                    <p>
+                        Use Short for quick insights, Medium for balanced summaries and Detailed for deeper coverage.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="tip">
+
+                <div class="tip-icon">
+                    ⚡
+                </div>
+
+                <div>
+
+                    <strong>
+                        Save reading time
+                    </strong>
+
+                    <p>
+                        Get the main ideas without reading every page manually.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="tip">
+
+                <div class="tip-icon">
+                    🔐
+                </div>
+
+                <div>
+
+                    <strong>
+                        Review important information
+                    </strong>
+
+                    <p>
+                        Always verify important details against the original PDF.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- RESULT -->
+
+    <div
+        id="resultCard"
+        class="card result-card"
+    >
+
+        <div class="result-header">
+
+            <h2>
+                ✨ PDF Summary
+            </h2>
+
+            <div class="ai-tag">
+                AI GENERATED
+            </div>
+
+        </div>
+
+
+        <div id="result"></div>
+
+
+        <button
+            id="copyBtn"
+            class="copy-btn"
+            onclick="copySummary()"
+        >
+            📋 Copy Summary
+        </button>
+
+    </div>
+
+
+    <div class="footer-note">
+        AI Toolbox • Smart tools for everyday work
+    </div>
+
+</div>
+
+
+<script>
+
+function showFileName() {
+
+    const fileInput =
+        document.getElementById(
+            "pdfFile"
+        );
+
+    const fileName =
+        document.getElementById(
+            "fileName"
+        );
+
+
+    if (fileInput.files.length > 0) {
+
+        const file =
+            fileInput.files[0];
+
+
+        fileName.textContent =
+            "📎 Selected: " +
+            file.name;
+
+    } else {
+
+        fileName.textContent =
+            "";
+
+    }
+
+}
+
+
+async function summarizePDF() {
+
+    const fileInput =
+        document.getElementById(
+            "pdfFile"
+        );
+
+    const summaryLength =
+        document.getElementById(
+            "summaryLength"
+        ).value;
+
+    const result =
+        document.getElementById(
+            "result"
+        );
+
+    const resultCard =
+        document.getElementById(
+            "resultCard"
+        );
+
+    const copyBtn =
+        document.getElementById(
+            "copyBtn"
+        );
+
+    const status =
+        document.getElementById(
+            "status"
+        );
+
+    const summarizeBtn =
+        document.getElementById(
+            "summarizeBtn"
+        );
+
+
+    /* CHECK FILE */
+
+    if (!fileInput.files.length) {
+
+        status.style.display =
+            "block";
+
+        status.style.color =
+            "#fca5a5";
+
+        status.style.borderColor =
+            "rgba(239,68,68,0.20)";
+
+        status.style.background =
+            "rgba(239,68,68,0.09)";
+
+        status.textContent =
+            "⚠️ Please choose a PDF file first.";
+
+        return;
+    }
+
+
+    const file =
+        fileInput.files[0];
+
+
+    /* CHECK PDF */
+
+    if (
+        file.type !== "application/pdf" &&
+        !file.name
+            .toLowerCase()
+            .endsWith(".pdf")
+    ) {
+
+        status.style.display =
+            "block";
+
+        status.style.color =
+            "#fca5a5";
+
+        status.style.borderColor =
+            "rgba(239,68,68,0.20)";
+
+        status.style.background =
+            "rgba(239,68,68,0.09)";
+
+        status.textContent =
+            "❌ Please select a valid PDF file.";
+
+        return;
+    }
+
+
+    /* RESET */
+
+    resultCard.style.display =
+        "none";
+
+    copyBtn.style.display =
+        "none";
+
+    result.textContent =
+        "";
+
+
+    /* LOADING */
+
+    status.style.display =
+        "block";
+
+    status.style.color =
+        "#c4b5fd";
+
+    status.style.borderColor =
+        "rgba(139,92,246,0.20)";
+
+    status.style.background =
+        "rgba(139,92,246,0.10)";
+
+    status.textContent =
+        "🤖 AI is reading your PDF and creating a summary...";
+
+
+    summarizeBtn.disabled =
+        true;
+
+    summarizeBtn.textContent =
+        "⏳ Summarizing...";
+
+
+    try {
+
+        /* FORM DATA */
+
+        const formData =
+            new FormData();
+
+
+        formData.append(
+            "pdf",
+            file
+        );
+
+
+        /* BACKEND REQUEST */
+
+        const response =
+            await fetch(
+                "/api/summarize-pdf",
+                {
+                    method: "POST",
+
+                    credentials: "include",
+
+                    body: formData
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        /* ERROR */
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Failed to summarize PDF."
+            );
+
+        }
+
+
+        /* SUMMARY CHECK */
+
+        if (!data.summary) {
+
+            throw new Error(
+                "AI did not return a summary."
+            );
+
+        }
+
+
+        /* RESULT */
+
+        result.textContent =
+`PDF Summary
+
+File: ${data.filename || file.name}
+
+Summary Length: ${summaryLength}
+
+${data.summary}`;
+
+
+        resultCard.style.display =
+            "block";
+
+
+        copyBtn.style.display =
+            "block";
+
+
+        status.style.display =
+            "none";
+
+
+        /* SCROLL */
+
+        resultCard.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "PDF summarizer error:",
+            error
+        );
+
+
+        resultCard.style.display =
+            "block";
+
+
+        result.textContent =
+            "❌ Error\n\n" +
+            error.message;
+
+
+        copyBtn.style.display =
+            "none";
+
+
+        status.style.display =
+            "none";
+
+
+    } finally {
+
+        summarizeBtn.disabled =
+            false;
+
+        summarizeBtn.textContent =
+            "✨ Summarize PDF";
+
+    }
+
+}
+
+
+async function copySummary() {
+
+    const result =
+        document.getElementById(
+            "result"
+        );
+
+
+    const text =
+        result.textContent;
+
+
+    if (!text.trim()) {
+        return;
+    }
+
+
+    try {
+
+        await navigator
+            .clipboard
+            .writeText(text);
+
+
+        const copyBtn =
+            document.getElementById(
+                "copyBtn"
+            );
+
+
+        const originalText =
+            copyBtn.textContent;
+
+
+        copyBtn.textContent =
+            "✅ Summary Copied!";
+
+
+        setTimeout(() => {
+
+            copyBtn.textContent =
+                originalText;
+
+        }, 1800);
+
+
+    } catch (error) {
+
+        alert(
+            "Could not copy the summary."
+        );
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>

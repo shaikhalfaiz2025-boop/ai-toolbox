@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Email Writer - AI Toolbox</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #070711;
+            --card: rgba(18, 18, 35, 0.78);
+            --border: rgba(255, 255, 255, 0.10);
+            --text: #f5f5ff;
+            --muted: #a6a6bd;
+            --purple: #8b5cf6;
+            --pink: #ec4899;
+            --cyan: #22d3ee;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background:
+                radial-gradient(circle at 15% 15%, rgba(139, 92, 246, 0.20), transparent 30%),
+                radial-gradient(circle at 85% 20%, rgba(236, 72, 153, 0.15), transparent 30%),
+                radial-gradient(circle at 50% 90%, rgba(34, 211, 238, 0.08), transparent 35%),
+                var(--bg);
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+            background-size: 40px 40px;
+            mask-image: linear-gradient(to bottom, black, transparent);
+            z-index: -1;
+        }
+
+        nav {
+            width: 100%;
+            padding: 18px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            background: rgba(7, 7, 17, 0.72);
+            backdrop-filter: blur(18px);
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        .logo {
+            text-decoration: none;
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+
+            background: linear-gradient(
+                90deg,
+                var(--purple),
+                var(--pink),
+                var(--cyan)
+            );
+
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back {
+            text-decoration: none;
+            color: #d8d8e8;
+            font-weight: 700;
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.04);
+            transition: 0.25s;
+        }
+
+        .back:hover {
+            color: white;
+            border-color: rgba(139,92,246,0.55);
+            background: rgba(139,92,246,0.12);
+            transform: translateY(-1px);
+        }
+
+        .container {
+            width: 92%;
+            max-width: 1050px;
+            margin: 55px auto 80px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 38px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(139,92,246,0.30);
+            background: rgba(139,92,246,0.09);
+            color: #c4b5fd;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
+
+        .badge span {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 12px #22c55e;
+        }
+
+        .header h1 {
+            font-size: clamp(34px, 5vw, 56px);
+            line-height: 1.08;
+            margin-bottom: 15px;
+            letter-spacing: -1.5px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(
+                90deg,
+                #ffffff,
+                #c4b5fd,
+                #f9a8d4
+            );
+
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: var(--muted);
+            font-size: 17px;
+            line-height: 1.7;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 0.8fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow:
+                0 25px 80px rgba(0,0,0,0.35),
+                inset 0 1px 0 rgba(255,255,255,0.04);
+            backdrop-filter: blur(20px);
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 26px;
+        }
+
+        .icon-box {
+            width: 44px;
+            height: 44px;
+            border-radius: 13px;
+            display: grid;
+            place-items: center;
+            font-size: 21px;
+            background: linear-gradient(
+                135deg,
+                rgba(139,92,246,0.20),
+                rgba(236,72,153,0.15)
+            );
+            border: 1px solid rgba(139,92,246,0.22);
+        }
+
+        .card-title h2 {
+            font-size: 20px;
+        }
+
+        .card-title p {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .field {
+            margin-bottom: 21px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            color: #e8e8f2;
+            margin-bottom: 9px;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            border: 1px solid rgba(255,255,255,0.10);
+            background: rgba(255,255,255,0.045);
+            color: white;
+            border-radius: 13px;
+            padding: 14px 15px;
+            font-size: 15px;
+            outline: none;
+            transition: 0.25s;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #77778d;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: rgba(139,92,246,0.75);
+            box-shadow: 0 0 0 4px rgba(139,92,246,0.10);
+            background: rgba(255,255,255,0.06);
+        }
+
+        textarea {
+            min-height: 165px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image:
+                linear-gradient(45deg, transparent 50%, #aaa 50%),
+                linear-gradient(135deg, #aaa 50%, transparent 50%);
+            background-position:
+                calc(100% - 18px) 19px,
+                calc(100% - 13px) 19px;
+            background-size: 5px 5px;
+            background-repeat: no-repeat;
+        }
+
+        select option {
+            background: #141421;
+            color: white;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .generate-btn {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            padding: 16px 20px;
+            border: none;
+            border-radius: 13px;
+            color: white;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+
+            background: linear-gradient(
+                135deg,
+                var(--purple),
+                var(--pink)
+            );
+
+            box-shadow:
+                0 12px 30px rgba(139,92,246,0.25);
+
+            transition: 0.25s;
+        }
+
+        .generate-btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 70%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255,255,255,0.25),
+                transparent
+            );
+            transform: skewX(-20deg);
+            transition: 0.6s;
+        }
+
+        .generate-btn:hover::before {
+            left: 130%;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 16px 38px rgba(139,92,246,0.35);
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #status {
+            display: none;
+            margin-top: 18px;
+            padding: 13px 15px;
+            border-radius: 12px;
+            background: rgba(139,92,246,0.10);
+            border: 1px solid rgba(139,92,246,0.20);
+            color: #c4b5fd;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        #status.error {
+            background: rgba(239,68,68,0.09);
+            border-color: rgba(239,68,68,0.20);
+            color: #fca5a5;
+        }
+
+        .tips-card {
+            height: fit-content;
+        }
+
+        .tips-card h3 {
+            font-size: 18px;
+            margin-bottom: 18px;
+        }
+
+        .tip {
+            display: flex;
+            gap: 12px;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+
+        .tip:last-child {
+            border-bottom: none;
+        }
+
+        .tip-icon {
+            width: 34px;
+            height: 34px;
+            flex-shrink: 0;
+            display: grid;
+            place-items: center;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .tip strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .tip p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .result-card {
+            display: none;
+            margin-top: 24px;
+            animation: fadeUp 0.35s ease;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 18px;
+        }
+
+        .result-header h2 {
+            font-size: 20px;
+        }
+
+        .ai-tag {
+            padding: 7px 11px;
+            border-radius: 999px;
+            background: rgba(34,211,238,0.08);
+            border: 1px solid rgba(34,211,238,0.20);
+            color: #67e8f9;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        #result {
+            padding: 22px;
+            min-height: 180px;
+            border-radius: 15px;
+            background: rgba(0,0,0,0.20);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #ededf7;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            font-size: 15px;
+        }
+
+        .copy-btn {
+            width: 100%;
+            margin-top: 15px;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.10);
+            background: rgba(255,255,255,0.06);
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.25s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(139,92,246,0.15);
+            border-color: rgba(139,92,246,0.35);
+        }
+
+        .footer-note {
+            text-align: center;
+            color: #66667b;
+            font-size: 12px;
+            margin-top: 25px;
+        }
+
+        @media (max-width: 800px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tips-card {
+                order: 2;
+            }
+        }
+
+        @media (max-width: 600px) {
+            nav {
+                padding: 16px 5%;
+            }
+
+            .logo {
+                font-size: 21px;
+            }
+
+            .back {
+                padding: 8px 11px;
+                font-size: 13px;
+            }
+
+            .container {
+                width: 92%;
+                margin: 38px auto 60px;
+            }
+
+            .header {
+                margin-bottom: 28px;
+            }
+
+            .header h1 {
+                font-size: 34px;
+            }
+
+            .header p {
+                font-size: 14px;
+            }
+
+            .card {
+                padding: 21px;
+                border-radius: 19px;
+            }
+
+            .options {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            textarea {
+                min-height: 145px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav>
+    <a href="index.html" class="logo">AI Toolbox</a>
+
+    <a href="index.html" class="back">
+        ← Back Home
+    </a>
+</nav>
+
+
+<div class="container">
+
+    <div class="header">
+
+        <div class="badge">
+            <span></span>
+            AI EMAIL GENERATOR
+        </div>
+
+        <h1>
+            Write better emails
+            <span class="gradient-text">in seconds.</span>
+        </h1>
+
+        <p>
+            Tell AI what you want to say and get a polished,
+            professional email instantly.
+        </p>
+
+    </div>
+
+
+    <div class="main-grid">
+
+        <!-- GENERATOR CARD -->
+
+        <div class="card">
+
+            <div class="card-title">
+
+                <div class="icon-box">
+                    📧
+                </div>
+
+                <div>
+                    <h2>Create your email</h2>
+
+                    <p>
+                        Give AI a few details and let it handle the writing.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="recipient">
+                    Who is the email for?
+                </label>
+
+                <input
+                    id="recipient"
+                    type="text"
+                    placeholder="Example: My Manager"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="request">
+                    What do you want to say?
+                </label>
+
+                <textarea
+                    id="request"
+                    placeholder="Example: Ask for 3 days leave because of a family function."
+                ></textarea>
+
+            </div>
+
+
+            <div class="options">
+
+                <div class="field">
+
+                    <label for="tone">
+                        Tone
+                    </label>
+
+                    <select id="tone">
+
+                        <option>Professional</option>
+                        <option>Friendly</option>
+                        <option>Formal</option>
+                        <option>Casual</option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="length">
+                        Length
+                    </label>
+
+                    <select id="length">
+
+                        <option>Short</option>
+
+                        <option selected>
+                            Medium
+                        </option>
+
+                        <option>Long</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <button
+                id="generateBtn"
+                class="generate-btn"
+                onclick="generateEmail()"
+            >
+                ✨ Generate Email
+            </button>
+
+
+            <div id="status"></div>
+
+        </div>
+
+
+        <!-- TIPS CARD -->
+
+        <div class="card tips-card">
+
+            <h3>
+                💡 Tips for better emails
+            </h3>
+
+
+            <div class="tip">
+
+                <div class="tip-icon">
+                    🎯
+                </div>
+
+                <div>
+
+                    <strong>
+                        Be specific
+                    </strong>
+
+                    <p>
+                        Clearly explain what you want the email to communicate.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="tip">
+
+                <div class="tip-icon">
+                    🎨
+                </div>
+
+                <div>
+
+                    <strong>
+                        Choose the right tone
+                    </strong>
+
+                    <p>
+                        Use Professional for work and Friendly for casual communication.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="tip">
+
+                <div class="tip-icon">
+                    ⚡
+                </div>
+
+                <div>
+
+                    <strong>
+                        Keep it simple
+                    </strong>
+
+                    <p>
+                        A short description is usually enough for AI to understand your request.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="tip">
+
+                <div class="tip-icon">
+                    ✨
+                </div>
+
+                <div>
+
+                    <strong>
+                        Edit before sending
+                    </strong>
+
+                    <p>
+                        Always review the generated email and personalize it before sending.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- RESULT -->
+
+    <div
+        id="resultCard"
+        class="card result-card"
+    >
+
+        <div class="result-header">
+
+            <h2>
+                ✨ Generated Email
+            </h2>
+
+            <div class="ai-tag">
+                AI GENERATED
+            </div>
+
+        </div>
+
+
+        <div id="result"></div>
+
+
+        <button
+            id="copyBtn"
+            class="copy-btn"
+            onclick="copyEmail()"
+        >
+            📋 Copy Email
+        </button>
+
+    </div>
+
+
+    <div class="footer-note">
+        AI Toolbox • Smart tools for everyday work
+    </div>
+
+</div>
+
+
+<script>
+
+async function generateEmail() {
+
+    const recipient =
+        document.getElementById("recipient").value.trim();
+
+    const request =
+        document.getElementById("request").value.trim();
+
+    const tone =
+        document.getElementById("tone").value;
+
+    const length =
+        document.getElementById("length").value;
+
+    const resultCard =
+        document.getElementById("resultCard");
+
+    const result =
+        document.getElementById("result");
+
+    const generateBtn =
+        document.getElementById("generateBtn");
+
+    const status =
+        document.getElementById("status");
+
+
+    if (!recipient || !request) {
+
+        status.style.display = "block";
+
+        status.className = "error";
+
+        status.textContent =
+            "⚠️ Please fill in both recipient and email request.";
+
+        return;
+    }
+
+
+    resultCard.style.display = "none";
+
+    result.textContent = "";
+
+
+    status.style.display = "block";
+
+    status.className = "";
+
+    status.textContent =
+        "🤖 AI is writing your email...";
+
+
+    generateBtn.disabled = true;
+
+    generateBtn.textContent =
+        "⏳ Generating...";
+
+
+    try {
+
+        const response = await fetch(
+            "/api/generate-email",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                credentials: "include",
+
+                body: JSON.stringify({
+
+                    recipient: recipient,
+
+                    request: request,
+
+                    tone: tone,
+
+                    length: length
+
+                })
+            }
+        );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Email generation failed."
+            );
+        }
+
+
+        if (!data.email) {
+
+            throw new Error(
+                "AI did not return an email."
+            );
+        }
+
+
+        result.textContent =
+            data.email;
+
+
+        resultCard.style.display =
+            "block";
+
+
+        status.style.display =
+            "none";
+
+
+        resultCard.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Email Generator Error:",
+            error
+        );
+
+
+        status.style.display =
+            "block";
+
+        status.className =
+            "error";
+
+        status.textContent =
+            "❌ " + error.message;
+
+
+    } finally {
+
+        generateBtn.disabled =
+            false;
+
+        generateBtn.textContent =
+            "✨ Generate Email";
+
+    }
+
+}
+
+
+async function copyEmail() {
+
+    const result =
+        document.getElementById("result");
+
+
+    const text =
+        result.textContent;
+
+
+    if (!text.trim()) {
+
+        return;
+
+    }
+
+
+    try {
+
+        await navigator.clipboard.writeText(text);
+
+
+        const copyBtn =
+            document.getElementById("copyBtn");
+
+
+        const originalText =
+            copyBtn.textContent;
+
+
+        copyBtn.textContent =
+            "✅ Email Copied!";
+
+
+        setTimeout(() => {
+
+            copyBtn.textContent =
+                originalText;
+
+        }, 1800);
+
+
+    } catch (error) {
+
+        alert(
+            "Could not copy the email."
+        );
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard — AI Toolbox</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #07050d;
+            --bg2: #0d0917;
+
+            --card: rgba(255,255,255,.055);
+            --card-hover: rgba(255,255,255,.085);
+
+            --white: #ffffff;
+            --text: #eeeafd;
+            --muted: #9d98ae;
+
+            --purple: #7c3cff;
+            --violet: #a855f7;
+            --pink: #ec4899;
+
+            --border: rgba(255,255,255,.10);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+
+            font-family:
+                Inter,
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            color: var(--text);
+
+            background:
+                radial-gradient(
+                    circle at 10% 10%,
+                    rgba(124,60,255,.18),
+                    transparent 30%
+                ),
+
+                radial-gradient(
+                    circle at 90% 15%,
+                    rgba(236,72,153,.10),
+                    transparent 28%
+                ),
+
+                radial-gradient(
+                    circle at 50% 100%,
+                    rgba(168,85,247,.08),
+                    transparent 30%
+                ),
+
+                var(--bg);
+
+            overflow-x: hidden;
+        }
+
+
+        /* =====================================
+           BACKGROUND GLOW
+        ===================================== */
+
+        body::before {
+
+            content: "";
+
+            position: fixed;
+
+            width: 450px;
+            height: 450px;
+
+            left: -220px;
+            top: 35%;
+
+            border-radius: 50%;
+
+            background:
+                rgba(124,60,255,.08);
+
+            filter: blur(100px);
+
+            pointer-events: none;
+
+            z-index: -1;
+        }
+
+
+        body::after {
+
+            content: "";
+
+            position: fixed;
+
+            width: 450px;
+            height: 450px;
+
+            right: -220px;
+            bottom: 10%;
+
+            border-radius: 50%;
+
+            background:
+                rgba(168,85,247,.07);
+
+            filter: blur(100px);
+
+            pointer-events: none;
+
+            z-index: -1;
+        }
+
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+
+        button {
+            font-family: inherit;
+        }
+
+
+        /* =====================================
+           NAVBAR
+        ===================================== */
+
+        .navbar {
+
+            height: 76px;
+
+            padding:
+                0 6%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 1000;
+
+            background:
+                rgba(7,5,13,.78);
+
+            backdrop-filter:
+                blur(20px);
+
+            border-bottom:
+                1px solid
+                rgba(255,255,255,.07);
+        }
+
+
+        .logo {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            font-size: 20px;
+
+            font-weight: 900;
+
+            letter-spacing: -.5px;
+        }
+
+
+        .logo-icon {
+
+            width: 38px;
+            height: 38px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 12px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--purple),
+                    var(--pink)
+                );
+
+            box-shadow:
+                0 0 28px
+                rgba(124,60,255,.40);
+
+            font-size: 18px;
+        }
+
+
+        .nav-right {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+        }
+
+
+        .nav-link,
+        .profile-btn {
+
+            padding:
+                10px 14px;
+
+            color: #aaa5b8;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            transition: .25s;
+        }
+
+
+        .nav-link:hover,
+        .profile-btn:hover {
+
+            color: white;
+        }
+
+
+        .profile-btn {
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 10px;
+
+            background:
+                rgba(255,255,255,.04);
+        }
+
+
+        .logout-btn {
+
+            border: none;
+
+            padding:
+                10px 15px;
+
+            border-radius: 10px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--purple),
+                    var(--violet)
+                );
+
+            color: white;
+
+            font-size: 13px;
+
+            font-weight: 800;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 8px 25px
+                rgba(124,60,255,.22);
+
+            transition: .25s;
+        }
+
+
+        .logout-btn:hover {
+
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 12px 32px
+                rgba(124,60,255,.38);
+        }
+
+
+        /* =====================================
+           MAIN
+        ===================================== */
+
+        .container {
+
+            width: min(1200px, 88%);
+
+            margin:
+                55px auto 100px;
+        }
+
+
+        /* =====================================
+           WELCOME HERO
+        ===================================== */
+
+        .welcome {
+
+            position: relative;
+
+            padding:
+                48px 45px;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 26px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.075),
+                    rgba(255,255,255,.025)
+                );
+
+            backdrop-filter:
+                blur(18px);
+
+            overflow: hidden;
+
+            margin-bottom: 25px;
+
+            box-shadow:
+                0 25px 70px
+                rgba(0,0,0,.25);
+        }
+
+
+        .welcome::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 300px;
+            height: 300px;
+
+            right: -120px;
+            top: -170px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(124,60,255,.18);
+
+            filter: blur(45px);
+        }
+
+
+        .welcome::after {
+
+            content: "";
+
+            position: absolute;
+
+            width: 180px;
+            height: 180px;
+
+            right: 180px;
+            bottom: -130px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(236,72,153,.10);
+
+            filter: blur(40px);
+        }
+
+
+        .welcome-content {
+
+            position: relative;
+
+            z-index: 2;
+        }
+
+
+        .welcome-badge {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            padding:
+                7px 12px;
+
+            border:
+                1px solid
+                rgba(168,85,247,.25);
+
+            border-radius: 30px;
+
+            background:
+                rgba(124,60,255,.08);
+
+            color:
+                #cbb7ff;
+
+            font-size: 11px;
+
+            font-weight: 800;
+
+            margin-bottom: 15px;
+        }
+
+
+        .welcome h1 {
+
+            font-size:
+                clamp(30px, 4vw, 46px);
+
+            line-height: 1.1;
+
+            letter-spacing: -2px;
+
+            font-weight: 900;
+        }
+
+
+        .welcome h1 span {
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #8b5cf6,
+                    #c084fc,
+                    #f472b6
+                );
+
+            background-clip: text;
+
+            -webkit-background-clip: text;
+
+            color: transparent;
+
+            -webkit-text-fill-color: transparent;
+        }
+
+
+        .welcome p {
+
+            max-width: 650px;
+
+            margin-top: 13px;
+
+            color:
+                var(--muted);
+
+            font-size: 14px;
+        }
+
+
+        .quick-actions {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 10px;
+
+            margin-top: 24px;
+        }
+
+
+        .quick-btn {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            padding:
+                11px 16px;
+
+            border-radius: 11px;
+
+            background:
+                rgba(255,255,255,.05);
+
+            border:
+                1px solid
+                var(--border);
+
+            color:
+                #ddd8e8;
+
+            font-size: 12px;
+
+            font-weight: 800;
+
+            transition: .25s;
+        }
+
+
+        .quick-btn:hover {
+
+            transform:
+                translateY(-2px);
+
+            background:
+                rgba(255,255,255,.09);
+
+            border-color:
+                rgba(168,85,247,.3);
+        }
+
+
+        .quick-btn.primary {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--purple),
+                    var(--violet)
+                );
+
+            border-color:
+                transparent;
+
+            color: white;
+
+            box-shadow:
+                0 10px 30px
+                rgba(124,60,255,.25);
+        }
+
+
+        /* =====================================
+           STATS
+        ===================================== */
+
+        .stats-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 16px;
+
+            margin-bottom: 45px;
+        }
+
+
+        .stat-card {
+
+            position: relative;
+
+            padding:
+                25px;
+
+            min-height: 150px;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 19px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.065),
+                    rgba(255,255,255,.025)
+                );
+
+            backdrop-filter:
+                blur(14px);
+
+            overflow: hidden;
+
+            transition: .3s;
+        }
+
+
+        .stat-card:hover {
+
+            transform:
+                translateY(-5px);
+
+            border-color:
+                rgba(168,85,247,.28);
+
+            background:
+                var(--card-hover);
+        }
+
+
+        .stat-card::after {
+
+            content: "";
+
+            position: absolute;
+
+            width: 90px;
+            height: 90px;
+
+            right: -35px;
+            top: -35px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(124,60,255,.13);
+
+            filter: blur(20px);
+        }
+
+
+        .stat-icon {
+
+            width: 40px;
+            height: 40px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 11px;
+
+            background:
+                rgba(124,60,255,.12);
+
+            border:
+                1px solid
+                rgba(168,85,247,.18);
+
+            margin-bottom: 15px;
+
+            font-size: 18px;
+        }
+
+
+        .stat-card span {
+
+            display: block;
+
+            color:
+                var(--muted);
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            letter-spacing: .6px;
+        }
+
+
+        .stat-card strong {
+
+            display: block;
+
+            margin-top: 4px;
+
+            font-size: 29px;
+
+            font-weight: 900;
+
+            color: white;
+        }
+
+
+        .stat-card small {
+
+            color:
+                #716c7d;
+
+            font-size: 10px;
+        }
+
+
+        /* =====================================
+           SECTION HEADER
+        ===================================== */
+
+        .section-header {
+
+            display: flex;
+
+            align-items: end;
+
+            justify-content: space-between;
+
+            margin-bottom: 20px;
+        }
+
+
+        .section-title {
+
+            font-size: 24px;
+
+            font-weight: 900;
+
+            letter-spacing: -1px;
+        }
+
+
+        .section-subtitle {
+
+            margin-top: 5px;
+
+            color:
+                var(--muted);
+
+            font-size: 12px;
+        }
+
+
+        .view-all {
+
+            color:
+                #b79cff;
+
+            font-size: 12px;
+
+            font-weight: 800;
+        }
+
+
+        .view-all:hover {
+
+            color: white;
+        }
+
+
+        /* =====================================
+           TOOL GRID
+        ===================================== */
+
+        .tools-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 17px;
+
+            margin-bottom: 50px;
+        }
+
+
+        .tool-card {
+
+            position: relative;
+
+            min-height: 235px;
+
+            padding: 25px;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 19px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.065),
+                    rgba(255,255,255,.025)
+                );
+
+            overflow: hidden;
+
+            transition: .3s;
+        }
+
+
+        .tool-card::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 130px;
+            height: 130px;
+
+            right: -60px;
+            top: -60px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(124,60,255,.13);
+
+            filter: blur(25px);
+
+            transition: .3s;
+        }
+
+
+        .tool-card:hover {
+
+            transform:
+                translateY(-7px);
+
+            background:
+                var(--card-hover);
+
+            border-color:
+                rgba(168,85,247,.3);
+
+            box-shadow:
+                0 22px 55px
+                rgba(0,0,0,.25);
+        }
+
+
+        .tool-card:hover::before {
+
+            transform:
+                scale(1.5);
+        }
+
+
+        .tool-icon {
+
+            width: 52px;
+            height: 52px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 14px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(124,60,255,.18),
+                    rgba(168,85,247,.07)
+                );
+
+            border:
+                1px solid
+                rgba(168,85,247,.18);
+
+            font-size: 23px;
+
+            margin-bottom: 18px;
+        }
+
+
+        .tool-card h3 {
+
+            font-size: 17px;
+
+            margin-bottom: 7px;
+        }
+
+
+        .tool-card p {
+
+            color:
+                var(--muted);
+
+            font-size: 12px;
+
+            line-height: 1.6;
+
+            min-height: 42px;
+        }
+
+
+        .tool-btn {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            margin-top: 18px;
+
+            padding:
+                9px 13px;
+
+            border-radius: 9px;
+
+            background:
+                rgba(124,60,255,.09);
+
+            border:
+                1px solid
+                rgba(168,85,247,.18);
+
+            color:
+                #c7b4ff;
+
+            font-size: 11px;
+
+            font-weight: 800;
+
+            transition: .25s;
+        }
+
+
+        .tool-btn:hover {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--purple),
+                    var(--violet)
+                );
+
+            border-color:
+                transparent;
+
+            color: white;
+
+            transform:
+                translateY(-2px);
+        }
+
+
+        /* =====================================
+           LOWER SECTION
+        ===================================== */
+
+        .lower-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                1.35fr .65fr;
+
+            gap: 18px;
+        }
+
+
+        /* =====================================
+           ACTIVITY
+        ===================================== */
+
+        .activity-card {
+
+            padding:
+                25px;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 20px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.06),
+                    rgba(255,255,255,.025)
+                );
+
+            min-height: 300px;
+        }
+
+
+        .activity-list {
+
+            margin-top: 18px;
+        }
+
+
+        .activity-item {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding:
+                14px 0;
+
+            border-bottom:
+                1px solid
+                rgba(255,255,255,.06);
+        }
+
+
+        .activity-item:last-child {
+
+            border-bottom: none;
+        }
+
+
+        .activity-left {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            min-width: 0;
+        }
+
+
+        .activity-icon {
+
+            width: 37px;
+            height: 37px;
+
+            flex-shrink: 0;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 10px;
+
+            background:
+                rgba(124,60,255,.11);
+
+            border:
+                1px solid
+                rgba(168,85,247,.16);
+        }
+
+
+        .activity-tool {
+
+            color:
+                #e7e2ef;
+
+            font-size: 12px;
+
+            font-weight: 800;
+
+            white-space: nowrap;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+        }
+
+
+        .activity-time {
+
+            color:
+                #716c7d;
+
+            font-size: 10px;
+
+            white-space: nowrap;
+        }
+
+
+        .no-activity {
+
+            padding:
+                55px 20px;
+
+            text-align: center;
+
+            color:
+                #777181;
+
+            font-size: 13px;
+        }
+
+
+        /* =====================================
+           INFO CARD
+        ===================================== */
+
+        .info-card {
+
+            padding:
+                27px;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 20px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(124,60,255,.13),
+                    rgba(255,255,255,.025)
+                );
+
+            min-height: 300px;
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+
+        .info-card::after {
+
+            content: "";
+
+            position: absolute;
+
+            width: 180px;
+            height: 180px;
+
+            right: -90px;
+            bottom: -90px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(236,72,153,.12);
+
+            filter: blur(30px);
+        }
+
+
+        .info-icon {
+
+            width: 48px;
+            height: 48px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 14px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--purple),
+                    var(--pink)
+                );
+
+            box-shadow:
+                0 10px 30px
+                rgba(124,60,255,.28);
+
+            font-size: 20px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .info-card h3 {
+
+            font-size: 20px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .info-card p {
+
+            color:
+                var(--muted);
+
+            font-size: 12px;
+
+            line-height: 1.7;
+
+            position: relative;
+
+            z-index: 2;
+        }
+
+
+        .info-link {
+
+            display: inline-flex;
+
+            margin-top: 22px;
+
+            color:
+                #c0a9ff;
+
+            font-size: 12px;
+
+            font-weight: 800;
+
+            position: relative;
+
+            z-index: 2;
+        }
+
+
+        .info-link:hover {
+
+            color: white;
+        }
+
+
+        /* =====================================
+           FOOTER
+        ===================================== */
+
+        .footer {
+
+            margin-top: 65px;
+
+            padding-top: 25px;
+
+            border-top:
+                1px solid
+                rgba(255,255,255,.06);
+
+            text-align: center;
+
+            color:
+                #5f5a68;
+
+            font-size: 11px;
+        }
+
+
+        /* =====================================
+           RESPONSIVE
+        ===================================== */
+
+        @media (max-width: 1000px) {
+
+            .stats-grid {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .tools-grid {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .lower-grid {
+
+                grid-template-columns:
+                    1fr;
+            }
+        }
+
+
+        @media (max-width: 650px) {
+
+            .navbar {
+
+                padding:
+                    0 20px;
+            }
+
+
+            .nav-link {
+
+                display: none;
+            }
+
+
+            .profile-btn {
+
+                padding:
+                    9px 10px;
+            }
+
+
+            .logout-btn {
+
+                padding:
+                    9px 11px;
+            }
+
+
+            .container {
+
+                width: 92%;
+
+                margin-top:
+                    30px;
+            }
+
+
+            .welcome {
+
+                padding:
+                    30px 23px;
+            }
+
+
+            .welcome h1 {
+
+                font-size: 29px;
+            }
+
+
+            .stats-grid {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+                gap: 10px;
+            }
+
+
+            .stat-card {
+
+                padding:
+                    18px;
+
+                min-height: 130px;
+            }
+
+
+            .stat-card strong {
+
+                font-size: 24px;
+            }
+
+
+            .tools-grid {
+
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .section-title {
+
+                font-size: 21px;
+            }
+
+
+            .section-header {
+
+                align-items:
+                    flex-start;
+            }
+
+
+            .lower-grid {
+
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .activity-item {
+
+                align-items:
+                    flex-start;
+
+                flex-direction:
+                    column;
+
+                gap: 7px;
+            }
+
+
+            .activity-time {
+
+                margin-left:
+                    49px;
+            }
+
+
+            .quick-actions {
+
+                flex-direction:
+                    column;
+            }
+
+
+            .quick-btn {
+
+                justify-content:
+                    center;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================
+         NAVBAR
+    ===================================== -->
+
+    <nav class="navbar">
+
+        <a href="index.html" class="logo">
+
+            <span class="logo-icon">
+                ⚡
+            </span>
+
+            AI Toolbox
+
+        </a>
+
+
+        <div class="nav-right">
+
+            <a
+                href="index.html"
+                class="nav-link"
+            >
+                Home
+            </a>
+
+
+            <a
+                href="profile.html"
+                class="profile-btn"
+            >
+                👤 Profile
+            </a>
+
+
+            <button
+                class="logout-btn"
+                onclick="logoutUser()"
+            >
+                Logout
+            </button>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- =====================================
+         MAIN
+    ===================================== -->
+
+    <main class="container">
+
+
+        <!-- WELCOME -->
+
+        <section class="welcome">
+
+            <div class="welcome-content">
+
+                <div class="welcome-badge">
+
+                    ✨ Personal AI Workspace
+
+                </div>
+
+
+                <h1>
+                    Welcome back,
+                    <span id="userName">
+                        User
+                    </span>
+                    👋
+                </h1>
+
+
+                <p>
+                    Your personal AI workspace is ready.
+                    Create, write, summarize, translate and
+                    build smarter from one place.
+                </p>
+
+
+                <div class="quick-actions">
+
+                    <a
+                        href="ai-writer.html"
+                        class="quick-btn primary"
+                    >
+                        ✍️ Start Writing
+                    </a>
+
+
+                    <a
+                        href="ai-code.html"
+                        class="quick-btn"
+                    >
+                        💻 Generate Code
+                    </a>
+
+
+                    <a
+                        href="pdf-summarizer.html"
+                        class="quick-btn"
+                    >
+                        📄 Summarize PDF
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================
+             STATS
+        ===================================== -->
+
+        <section class="stats-grid">
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🧰
+                </div>
+
+                <span>
+                    Available Tools
+                </span>
+
+                <strong>
+                    6+
+                </strong>
+
+                <small>
+                    AI tools ready
+                </small>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🚀
+                </div>
+
+                <span>
+                    Tools Used
+                </span>
+
+                <strong id="toolsUsedCount">
+                    0
+                </strong>
+
+                <small>
+                    Different tools
+                </small>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    ⚡
+                </div>
+
+                <span>
+                    AI Generations
+                </span>
+
+                <strong id="generationCount">
+                    0
+                </strong>
+
+                <small>
+                    Total generations
+                </small>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    ✨
+                </div>
+
+                <span>
+                    Current Plan
+                </span>
+
+                <strong>
+                    Free
+                </strong>
+
+                <small>
+                    AI Toolbox account
+                </small>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =====================================
+             TOOLS
+        ===================================== -->
+
+        <section>
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2 class="section-title">
+                        AI Tools
+                    </h2>
+
+                    <p class="section-subtitle">
+                        Choose a tool and start creating.
+                    </p>
+
+                </div>
+
+
+                <a
+                    href="index.html#tools"
+                    class="view-all"
+                >
+                    View all →
+                </a>
+
+            </div>
+
+
+
+            <div class="tools-grid">
+
+
+                <!-- WRITER -->
+
+                <div class="tool-card">
+
+                    <div class="tool-icon">
+                        ✍️
+                    </div>
+
+                    <h3>
+                        AI Writer
+                    </h3>
+
+                    <p>
+                        Create blogs, articles,
+                        content and professional
+                        writing with AI.
+                    </p>
+
+                    <a
+                        href="ai-writer.html"
+                        class="tool-btn"
+                    >
+                        Open Tool →
+                    </a>
+
+                </div>
+
+
+
+                <!-- IMAGE -->
+
+                <div class="tool-card">
+
+                    <div class="tool-icon">
+                        🎨
+                    </div>
+
+                    <h3>
+                        AI Image Generator
+                    </h3>
+
+                    <p>
+                        Turn your ideas into
+                        creative AI-generated
+                        visuals.
+                    </p>
+
+                    <a
+                        href="ai-image.html"
+                        class="tool-btn"
+                    >
+                        Open Tool →
+                    </a>
+
+                </div>
+
+
+
+                <!-- PDF -->
+
+                <div class="tool-card">
+
+                    <div class="tool-icon">
+                        📄
+                    </div>
+
+                    <h3>
+                        PDF Summarizer
+                    </h3>
+
+                    <p>
+                        Upload a PDF and get
+                        a clear, easy-to-read
+                        summary.
+                    </p>
+
+                    <a
+                        href="pdf-summarizer.html"
+                        class="tool-btn"
+                    >
+                        Open Tool →
+                    </a>
+
+                </div>
+
+
+
+                <!-- CODE -->
+
+                <div class="tool-card">
+
+                    <div class="tool-icon">
+                        💻
+                    </div>
+
+                    <h3>
+                        AI Code Generator
+                    </h3>
+
+                    <p>
+                        Generate, explain and
+                        improve your code with AI.
+                    </p>
+
+                    <a
+                        href="ai-code.html"
+                        class="tool-btn"
+                    >
+                        Open Tool →
+                    </a>
+
+                </div>
+
+
+
+                <!-- EMAIL -->
+
+                <div class="tool-card">
+
+                    <div class="tool-icon">
+                        📧
+                    </div>
+
+                    <h3>
+                        AI Email Writer
+                    </h3>
+
+                    <p>
+                        Create professional
+                        emails in seconds.
+                    </p>
+
+                    <a
+                        href="ai-email.html"
+                        class="tool-btn"
+                    >
+                        Open Tool →
+                    </a>
+
+                </div>
+
+
+
+                <!-- TRANSLATOR -->
+
+                <div class="tool-card">
+
+                    <div class="tool-icon">
+                        🌐
+                    </div>
+
+                    <h3>
+                        AI Translator
+                    </h3>
+
+                    <p>
+                        Translate your content
+                        into different languages.
+                    </p>
+
+                    <a
+                        href="ai-translator.html"
+                        class="tool-btn"
+                    >
+                        Open Tool →
+                    </a>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================
+             LOWER SECTION
+        ===================================== -->
+
+        <section class="lower-grid">
+
+
+            <!-- ACTIVITY -->
+
+            <div class="activity-card">
+
+                <div class="section-header">
+
+                    <div>
+
+                        <h2 class="section-title">
+                            Recent Activity
+                        </h2>
+
+                        <p class="section-subtitle">
+                            Your latest AI generations.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="activityList"
+                    class="activity-list"
+                >
+
+                    <p class="no-activity">
+                        Loading activity...
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- INFO -->
+
+            <div class="info-card">
+
+                <div class="info-icon">
+                    🚀
+                </div>
+
+
+                <h3>
+                    Keep Creating
+                </h3>
+
+
+                <p>
+                    Use AI Toolbox to write content,
+                    summarize documents, generate code,
+                    create images, write emails and
+                    translate text — all from one
+                    simple workspace.
+                </p>
+
+
+                <a
+                    href="index.html#tools"
+                    class="info-link"
+                >
+                    Explore all tools →
+                </a>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- FOOTER -->
+
+        <div class="footer">
+
+            © 2026 AI Toolbox.
+            Powerful AI tools in one place.
+
+        </div>
+
+
+    </main>
+
+
+
+    <!-- =====================================
+         JAVASCRIPT
+    ===================================== -->
+
+    <script>
+
+
+        // =====================================
+        // LOAD USER
+        // =====================================
+
+        async function loadUser() {
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/api/auth/me"
+                    );
+
+
+                if (!response.ok) {
+
+                    window.location.href =
+                        "login.html";
+
+                    return;
+                }
+
+
+                const data =
+                    await response.json();
+
+
+                if (!data.user) {
+
+                    window.location.href =
+                        "login.html";
+
+                    return;
+                }
+
+
+                const name =
+                    data.user.name || "User";
+
+
+                document
+                    .getElementById("userName")
+                    .textContent = name;
+
+
+            } catch (error) {
+
+                console.error(
+                    "Dashboard user error:",
+                    error
+                );
+
+                window.location.href =
+                    "login.html";
+            }
+
+        }
+
+
+
+        // =====================================
+        // LOAD DASHBOARD STATS
+        // =====================================
+
+        async function loadDashboardStats() {
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/api/dashboard/stats"
+                    );
+
+
+                if (!response.ok) {
+
+                    console.error(
+                        "Could not load dashboard stats."
+                    );
+
+                    return;
+                }
+
+
+                const data =
+                    await response.json();
+
+
+
+                // GENERATIONS
+
+                document
+                    .getElementById(
+                        "generationCount"
+                    )
+                    .textContent =
+                    data.totalGenerations || 0;
+
+
+
+                // TOOLS USED
+
+                document
+                    .getElementById(
+                        "toolsUsedCount"
+                    )
+                    .textContent =
+                    data.toolsUsed || 0;
+
+
+
+                // ACTIVITY
+
+                const activityList =
+                    document.getElementById(
+                        "activityList"
+                    );
+
+
+                if (
+                    !data.recentActivity ||
+                    data.recentActivity.length === 0
+                ) {
+
+                    activityList.innerHTML =
+                        `
+                        <p class="no-activity">
+                            No recent activity yet.
+                        </p>
+                        `;
+
+                    return;
+                }
+
+
+
+                activityList.innerHTML =
+
+                    data.recentActivity
+                        .map(function(activity) {
+
+                            const date =
+                                new Date(
+                                    activity.created_at
+                                );
+
+
+                            let icon = "🤖";
+
+
+                            if (
+                                activity.tool
+                                    .toLowerCase()
+                                    .includes("writer")
+                            ) {
+
+                                icon = "✍️";
+
+                            } else if (
+                                activity.tool
+                                    .toLowerCase()
+                                    .includes("image")
+                            ) {
+
+                                icon = "🎨";
+
+                            } else if (
+                                activity.tool
+                                    .toLowerCase()
+                                    .includes("pdf")
+                            ) {
+
+                                icon = "📄";
+
+                            } else if (
+                                activity.tool
+                                    .toLowerCase()
+                                    .includes("code")
+                            ) {
+
+                                icon = "💻";
+
+                            } else if (
+                                activity.tool
+                                    .toLowerCase()
+                                    .includes("email")
+                            ) {
+
+                                icon = "📧";
+
+                            } else if (
+                                activity.tool
+                                    .toLowerCase()
+                                    .includes("translator")
+                            ) {
+
+                                icon = "🌐";
+                            }
+
+
+                            return `
+
+                                <div class="activity-item">
+
+                                    <div class="activity-left">
+
+                                        <div class="activity-icon">
+                                            ${icon}
+                                        </div>
+
+                                        <span class="activity-tool">
+                                            ${activity.tool}
+                                        </span>
+
+                                    </div>
+
+
+                                    <span class="activity-time">
+
+                                        ${date.toLocaleString()}
+
+                                    </span>
+
+                                </div>
+
+                            `;
+
+                        })
+                        .join("");
+
+
+
+            } catch (error) {
+
+                console.error(
+                    "Dashboard stats error:",
+                    error
+                );
+
+            }
+
+        }
+
+
+
+        // =====================================
+        // LOGOUT
+        // =====================================
+
+        async function logoutUser() {
+
+            const confirmed =
+                confirm(
+                    "Are you sure you want to logout?"
+                );
+
+
+            if (!confirmed) {
+
+                return;
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/api/auth/logout",
+                        {
+                            method: "POST"
+                        }
+                    );
+
+
+                if (response.ok) {
+
+                    window.location.href =
+                        "login.html";
+
+                } else {
+
+                    alert(
+                        "Logout failed. Please try again."
+                    );
+
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    "Logout error:",
+                    error
+                );
+
+
+                alert(
+                    "Something went wrong while logging out."
+                );
+
+            }
+
+        }
+
+
+
+        // =====================================
+        // START
+        // =====================================
+
+        loadUser();
+
+        loadDashboardStats();
+
+
+    </script>
+
+
+</body>
+
+</html>

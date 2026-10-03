@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Translator - AI Toolbox</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #070711;
+            --card: rgba(18, 18, 35, 0.78);
+            --border: rgba(255, 255, 255, 0.10);
+            --text: #f5f5ff;
+            --muted: #a6a6bd;
+            --purple: #8b5cf6;
+            --pink: #ec4899;
+            --cyan: #22d3ee;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
+            color: var(--text);
+
+            background:
+                radial-gradient(
+                    circle at 15% 15%,
+                    rgba(139, 92, 246, 0.20),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 85% 20%,
+                    rgba(236, 72, 153, 0.15),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 50% 90%,
+                    rgba(34, 211, 238, 0.08),
+                    transparent 35%
+                ),
+                var(--bg);
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+
+            background-image:
+                linear-gradient(
+                    rgba(255,255,255,0.018) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255,255,255,0.018) 1px,
+                    transparent 1px
+                );
+
+            background-size: 40px 40px;
+            mask-image: linear-gradient(
+                to bottom,
+                black,
+                transparent
+            );
+
+            z-index: -1;
+        }
+
+        /* NAVBAR */
+
+        nav {
+            width: 100%;
+            padding: 18px 7%;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            background: rgba(7, 7, 17, 0.72);
+            border-bottom: 1px solid var(--border);
+
+            backdrop-filter: blur(18px);
+
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        .logo {
+            text-decoration: none;
+
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+
+            background: linear-gradient(
+                90deg,
+                var(--purple),
+                var(--pink),
+                var(--cyan)
+            );
+
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back {
+            text-decoration: none;
+            color: #d8d8e8;
+
+            font-weight: 700;
+
+            padding: 10px 16px;
+
+            border: 1px solid var(--border);
+            border-radius: 10px;
+
+            background: rgba(255,255,255,0.04);
+
+            transition: 0.25s;
+        }
+
+        .back:hover {
+            color: white;
+
+            border-color: rgba(139,92,246,0.55);
+
+            background: rgba(139,92,246,0.12);
+
+            transform: translateY(-1px);
+        }
+
+        /* MAIN */
+
+        .container {
+            width: 92%;
+            max-width: 1050px;
+
+            margin: 55px auto 80px;
+        }
+
+        /* HEADER */
+
+        .header {
+            text-align: center;
+            margin-bottom: 38px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 8px 14px;
+
+            border-radius: 999px;
+
+            border: 1px solid rgba(139,92,246,0.30);
+
+            background: rgba(139,92,246,0.09);
+
+            color: #c4b5fd;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            margin-bottom: 18px;
+        }
+
+        .badge span {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #22c55e;
+
+            box-shadow:
+                0 0 12px #22c55e;
+        }
+
+        .header h1 {
+            font-size: clamp(34px, 5vw, 56px);
+
+            line-height: 1.08;
+
+            margin-bottom: 15px;
+
+            letter-spacing: -1.5px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(
+                90deg,
+                #ffffff,
+                #c4b5fd,
+                #67e8f9
+            );
+
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: var(--muted);
+
+            font-size: 17px;
+
+            line-height: 1.7;
+        }
+
+        /* GRID */
+
+        .main-grid {
+            display: grid;
+
+            grid-template-columns:
+                1fr 0.75fr;
+
+            gap: 24px;
+
+            align-items: start;
+        }
+
+        /* CARD */
+
+        .card {
+            background: var(--card);
+
+            border: 1px solid var(--border);
+
+            border-radius: 24px;
+
+            padding: 30px;
+
+            box-shadow:
+                0 25px 80px rgba(0,0,0,0.35),
+                inset 0 1px 0 rgba(255,255,255,0.04);
+
+            backdrop-filter: blur(20px);
+        }
+
+        /* CARD TITLE */
+
+        .card-title {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 26px;
+        }
+
+        .icon-box {
+            width: 44px;
+            height: 44px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 13px;
+
+            font-size: 21px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(139,92,246,0.20),
+                    rgba(34,211,238,0.12)
+                );
+
+            border:
+                1px solid rgba(139,92,246,0.22);
+        }
+
+        .card-title h2 {
+            font-size: 20px;
+        }
+
+        .card-title p {
+            color: var(--muted);
+
+            font-size: 13px;
+
+            margin-top: 4px;
+        }
+
+        /* FORM */
+
+        .field {
+            margin-bottom: 21px;
+        }
+
+        label {
+            display: block;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            color: #e8e8f2;
+
+            margin-bottom: 9px;
+        }
+
+        textarea,
+        select {
+            width: 100%;
+
+            border:
+                1px solid rgba(255,255,255,0.10);
+
+            background:
+                rgba(255,255,255,0.045);
+
+            color: white;
+
+            border-radius: 13px;
+
+            padding: 14px 15px;
+
+            font-size: 15px;
+
+            outline: none;
+
+            transition: 0.25s;
+        }
+
+        textarea::placeholder {
+            color: #77778d;
+        }
+
+        textarea:focus,
+        select:focus {
+            border-color:
+                rgba(139,92,246,0.75);
+
+            box-shadow:
+                0 0 0 4px
+                rgba(139,92,246,0.10);
+
+            background:
+                rgba(255,255,255,0.06);
+        }
+
+        textarea {
+            min-height: 180px;
+
+            resize: vertical;
+
+            line-height: 1.6;
+        }
+
+        select {
+            cursor: pointer;
+
+            appearance: none;
+
+            background-image:
+                linear-gradient(
+                    45deg,
+                    transparent 50%,
+                    #aaa 50%
+                ),
+                linear-gradient(
+                    135deg,
+                    #aaa 50%,
+                    transparent 50%
+                );
+
+            background-position:
+                calc(100% - 18px) 19px,
+                calc(100% - 13px) 19px;
+
+            background-size: 5px 5px;
+
+            background-repeat: no-repeat;
+        }
+
+        select option {
+            background: #141421;
+            color: white;
+        }
+
+        /* LANGUAGE BOXES */
+
+        .languages {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 15px;
+        }
+
+        /* TRANSLATE BUTTON */
+
+        .translate-btn {
+            position: relative;
+
+            overflow: hidden;
+
+            width: 100%;
+
+            padding: 16px 20px;
+
+            border: none;
+
+            border-radius: 13px;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: 800;
+
+            cursor: pointer;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--purple),
+                    var(--cyan)
+                );
+
+            box-shadow:
+                0 12px 30px
+                rgba(139,92,246,0.25);
+
+            transition: 0.25s;
+        }
+
+        .translate-btn::before {
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+            left: -100%;
+
+            width: 70%;
+            height: 100%;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255,255,255,0.25),
+                    transparent
+                );
+
+            transform: skewX(-20deg);
+
+            transition: 0.6s;
+        }
+
+        .translate-btn:hover::before {
+            left: 130%;
+        }
+
+        .translate-btn:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 16px 38px
+                rgba(34,211,238,0.25);
+        }
+
+        .translate-btn:active {
+            transform: translateY(0);
+        }
+
+        .translate-btn:disabled {
+            opacity: 0.65;
+
+            cursor: not-allowed;
+
+            transform: none;
+        }
+
+        /* STATUS */
+
+        #status {
+            display: none;
+
+            margin-top: 18px;
+
+            padding: 13px 15px;
+
+            border-radius: 12px;
+
+            background:
+                rgba(139,92,246,0.10);
+
+            border:
+                1px solid rgba(139,92,246,0.20);
+
+            color: #c4b5fd;
+
+            text-align: center;
+
+            font-size: 14px;
+
+            font-weight: 700;
+        }
+
+        #status.error {
+            background:
+                rgba(239,68,68,0.09);
+
+            border-color:
+                rgba(239,68,68,0.20);
+
+            color: #fca5a5;
+        }
+
+        /* TIPS */
+
+        .tips-card {
+            height: fit-content;
+        }
+
+        .tips-card h3 {
+            font-size: 18px;
+
+            margin-bottom: 18px;
+        }
+
+        .tip {
+            display: flex;
+
+            gap: 12px;
+
+            padding: 14px 0;
+
+            border-bottom:
+                1px solid
+                rgba(255,255,255,0.07);
+        }
+
+        .tip:last-child {
+            border-bottom: none;
+        }
+
+        .tip-icon {
+            width: 34px;
+            height: 34px;
+
+            flex-shrink: 0;
+
+            display: grid;
+
+            place-items: center;
+
+            border-radius: 10px;
+
+            background:
+                rgba(255,255,255,0.05);
+        }
+
+        .tip strong {
+            display: block;
+
+            font-size: 14px;
+
+            margin-bottom: 4px;
+        }
+
+        .tip p {
+            color: var(--muted);
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+        /* RESULT */
+
+        .result-card {
+            display: none;
+
+            margin-top: 24px;
+
+            animation:
+                fadeUp 0.35s ease;
+        }
+
+        @keyframes fadeUp {
+
+            from {
+                opacity: 0;
+                transform:
+                    translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform:
+                    translateY(0);
+            }
+
+        }
+
+        .result-header {
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin-bottom: 18px;
+        }
+
+        .result-header h2 {
+            font-size: 20px;
+        }
+
+        .ai-tag {
+            padding: 7px 11px;
+
+            border-radius: 999px;
+
+            background:
+                rgba(34,211,238,0.08);
+
+            border:
+                1px solid
+                rgba(34,211,238,0.20);
+
+            color: #67e8f9;
+
+            font-size: 12px;
+
+            font-weight: 700;
+        }
+
+        #result {
+            display: none;
+
+            padding: 22px;
+
+            min-height: 180px;
+
+            border-radius: 15px;
+
+            background:
+                rgba(0,0,0,0.20);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.08);
+
+            color: #ededf7;
+
+            line-height: 1.8;
+
+            white-space: pre-wrap;
+
+            font-size: 15px;
+        }
+
+        /* COPY */
+
+        .copy-btn {
+            width: 100%;
+
+            margin-top: 15px;
+
+            padding: 14px;
+
+            border-radius: 12px;
+
+            border:
+                1px solid
+                rgba(255,255,255,0.10);
+
+            background:
+                rgba(255,255,255,0.06);
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.25s;
+        }
+
+        .copy-btn:hover {
+            background:
+                rgba(139,92,246,0.15);
+
+            border-color:
+                rgba(139,92,246,0.35);
+        }
+
+        /* FOOTER */
+
+        .footer-note {
+            text-align: center;
+
+            color: #66667b;
+
+            font-size: 12px;
+
+            margin-top: 25px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 800px) {
+
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tips-card {
+                order: 2;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            nav {
+                padding: 16px 5%;
+            }
+
+            .logo {
+                font-size: 21px;
+            }
+
+            .back {
+                padding: 8px 11px;
+                font-size: 13px;
+            }
+
+            .container {
+                width: 92%;
+
+                margin:
+                    38px auto 60px;
+            }
+
+            .header {
+                margin-bottom: 28px;
+            }
+
+            .header h1 {
+                font-size: 34px;
+            }
+
+            .header p {
+                font-size: 14px;
+            }
+
+            .card {
+                padding: 21px;
+
+                border-radius: 19px;
+            }
+
+            .languages {
+                grid-template-columns: 1fr;
+            }
+
+            textarea {
+                min-height: 150px;
+            }
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+<nav>
+
+    <a
+        href="index.html"
+        class="logo"
+    >
+        AI Toolbox
+    </a>
+
+    <a
+        href="index.html"
+        class="back"
+    >
+        ← Back Home
+    </a>
+
+</nav>
+
+
+<div class="container">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <div class="badge">
+            <span></span>
+            AI TRANSLATOR
+        </div>
+
+        <h1>
+            Break the
+            <span class="gradient-text">
+                language barrier.
+            </span>
+        </h1>
+
+        <p>
+            Translate your text naturally and accurately
+            between multiple languages using AI.
+        </p>
+
+    </div>
+
+
+    <!-- MAIN -->
+
+    <div class="main-grid">
+
+        <!-- TRANSLATOR CARD -->
+
+        <div class="card">
+
+            <div class="card-title">
+
+                <div class="icon-box">
+                    🌐
+                </div>
+
+                <div>
+
+                    <h2>
+                        Translate your text
+                    </h2>
+
+                    <p>
+                        Choose your languages and let AI handle the translation.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- TEXT -->
+
+            <div class="field">
+
+                <label for="textInput">
+                    Enter your text
+                </label>
+
+                <textarea
+                    id="textInput"
+                    placeholder="Example: Hello, how are you?"
+                ></textarea>
+
+            </div>
+
+
+            <!-- LANGUAGES -->
+
+            <div class="languages">
+
+                <div class="field">
+
+                    <label for="fromLanguage">
+                        From
+                    </label>
+
+                    <select id="fromLanguage">
+
+                        <option>
+                            English
+                        </option>
+
+                        <option>
+                            Hindi
+                        </option>
+
+                        <option>
+                            Marathi
+                        </option>
+
+                        <option>
+                            Spanish
+                        </option>
+
+                        <option>
+                            French
+                        </option>
+
+                        <option>
+                            German
+                        </option>
+
+                        <option>
+                            Italian
+                        </option>
+
+                        <option>
+                            Portuguese
+                        </option>
+
+                        <option>
+                            Japanese
+                        </option>
+
+                        <option>
+                            Chinese
+                        </option>
+
+                        <option>
+                            Arabic
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="toLanguage">
+                        To
+                    </label>
+
+                    <select id="toLanguage">
+
+                        <option>
+                            Hindi
+                        </option>
+
+                        <option>
+                            English
+                        </option>
+
+                        <option>
+                            Marathi
+                        </option>
+
+                        <option>
+                            Spanish
+                        </option>
+
+                        <option>
+                            French
+                        </option>
+
+                        <option>
+                            German
+                        </option>
+
+                        <option>
+                            Italian
+                        </option>
+
+                        <option>
+                            Portuguese
+                        </option>
+
+                        <option>
+                            Japanese
+                        </option>
+
+                        <option>
+                            Chinese
+                        </option>
+
+                        <option>
+                            Arabic
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- BUTTON -->
+
+            <button
+                id="translateBtn"
+                class="translate-btn"
+                onclick="translateText()"
+            >
+                ✨ Translate
+            </button>
+
+
+            <!-- STATUS -->
+
+            <div id="status"></div>
+
+        </div>
+
+
+        <!-- TIPS -->
+
+        <div class="card tips-card">
+
+            <h3>
+                💡 Translation tips
+            </h3>
+
+
+            <div class="tip">
+
+                <div class="tip-icon">
+                    🎯
+                </div>
+
+                <div>
+
+                    <strong>
+                        Use clear text
+                    </strong>
+
+                    <p>
+                        Clear sentences help AI understand the meaning accurately.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="tip">
+
+                <div class="tip-icon">
+                    🗣️
+                </div>
+
+                <div>
+
+                    <strong>
+                        Natural language
+                    </strong>
+
+                    <p>
+                        AI focuses on meaning rather than translating every word literally.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="tip">
+
+                <div class="tip-icon">
+                    🌍
+                </div>
+
+                <div>
+
+                    <strong>
+                        Multiple languages
+                    </strong>
+
+                    <p>
+                        Translate between English, Hindi, Marathi and many other languages.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="tip">
+
+                <div class="tip-icon">
+                    ✨
+                </div>
+
+                <div>
+
+                    <strong>
+                        Review important text
+                    </strong>
+
+                    <p>
+                        Always review translations used for official or sensitive communication.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- RESULT -->
+
+    <div
+        id="resultCard"
+        class="card result-card"
+    >
+
+        <div class="result-header">
+
+            <h2>
+                ✨ Translation Result
+            </h2>
+
+            <div class="ai-tag">
+                AI TRANSLATED
+            </div>
+
+        </div>
+
+
+        <div id="result"></div>
+
+
+        <button
+            id="copyBtn"
+            class="copy-btn"
+            onclick="copyTranslation()"
+        >
+            📋 Copy Translation
+        </button>
+
+    </div>
+
+
+    <div class="footer-note">
+        AI Toolbox • Smart tools for everyday work
+    </div>
+
+</div>
+
+
+<script>
+
+async function translateText() {
+
+    const text =
+        document
+            .getElementById("textInput")
+            .value
+            .trim();
+
+    const from =
+        document
+            .getElementById("fromLanguage")
+            .value;
+
+    const to =
+        document
+            .getElementById("toLanguage")
+            .value;
+
+    const result =
+        document.getElementById("result");
+
+    const resultCard =
+        document.getElementById("resultCard");
+
+    const translateBtn =
+        document.getElementById("translateBtn");
+
+    const status =
+        document.getElementById("status");
+
+
+    /* VALIDATION */
+
+    if (!text) {
+
+        status.style.display = "block";
+
+        status.className = "error";
+
+        status.textContent =
+            "⚠️ Please enter some text to translate.";
+
+        return;
+    }
+
+
+    if (from === to) {
+
+        status.style.display = "block";
+
+        status.className = "error";
+
+        status.textContent =
+            "⚠️ Please select two different languages.";
+
+        return;
+    }
+
+
+    /* RESET */
+
+    resultCard.style.display = "none";
+
+    result.style.display = "none";
+
+    result.textContent = "";
+
+
+    /* LOADING */
+
+    status.style.display = "block";
+
+    status.className = "";
+
+    status.textContent =
+        "🤖 AI is translating your text...";
+
+
+    translateBtn.disabled = true;
+
+    translateBtn.textContent =
+        "⏳ Translating...";
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/translate",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    credentials: "include",
+
+                    body: JSON.stringify({
+
+                        text: text,
+
+                        from: from,
+
+                        to: to
+
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Translation failed."
+            );
+
+        }
+
+
+        if (!data.translation) {
+
+            throw new Error(
+                "AI did not return a translation."
+            );
+
+        }
+
+
+        /* SHOW RESULT */
+
+        result.textContent =
+            data.translation;
+
+        result.style.display =
+            "block";
+
+        resultCard.style.display =
+            "block";
+
+        status.style.display =
+            "none";
+
+
+        resultCard.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Translator Error:",
+            error
+        );
+
+
+        status.style.display =
+            "block";
+
+        status.className =
+            "error";
+
+        status.textContent =
+            "❌ " + error.message;
+
+
+    } finally {
+
+        translateBtn.disabled =
+            false;
+
+        translateBtn.textContent =
+            "✨ Translate";
+
+    }
+
+}
+
+
+async function copyTranslation() {
+
+    const text =
+        document
+            .getElementById("result")
+            .textContent;
+
+
+    if (!text.trim()) {
+        return;
+    }
+
+
+    try {
+
+        await navigator
+            .clipboard
+            .writeText(text);
+
+
+        const copyBtn =
+            document.getElementById(
+                "copyBtn"
+            );
+
+
+        const originalText =
+            copyBtn.textContent;
+
+
+        copyBtn.textContent =
+            "✅ Translation Copied!";
+
+
+        setTimeout(() => {
+
+            copyBtn.textContent =
+                originalText;
+
+        }, 1800);
+
+
+    } catch (error) {
+
+        alert(
+            "Could not copy the translation."
+        );
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
